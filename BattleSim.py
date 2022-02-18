@@ -29,9 +29,9 @@ class Simulator:
         ties = 0
         losses = 0
         for i in range(0,tests):
-            myPetsParty = self.myParty.copy()
-            otherPetsParty = self.otherParty.copy()
-            outcome = self.runSingleBattle(myParty, otherParty, False)
+            myPetsParty = Party(self.myParty.copy())
+            otherPetsParty = Party(self.otherParty.copy())
+            outcome = self.runSingleBattle(myPetsParty, otherPetsParty, False)
             if(outcome == 1):
                 wins += 1
             elif(outcome == -1):
@@ -43,10 +43,11 @@ class Simulator:
         lossP = losses*100 / tests
         print("Win(", winP, "%), Tie(", tieP, "%), Loss(", lossP, "%)")
 
-myPets = [Fish(), Fish(), Fish()]
-otherPets = [Mosquito(), Mosquito(), Mosquito(), Mosquito()]
+myPets = [Cricket()]
+otherPets = [Mosquito()]
 myParty = Party(myPets)
 otherParty = Party(otherPets)
 
 battleSim = Simulator(myParty,otherParty)
 battleSim.runSingleBattle(myParty, otherParty, True)
+## battleSim.runMultiBattle(10000)

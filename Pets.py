@@ -22,7 +22,41 @@ class Pet:
     def print(self):
         print(self.name,"(",self.attack,",",self.health,")   ",sep="",end="")
     def faint(self):
-        return ""
+        return []
+
+class Ant(Pet):
+    def __init__(self,name="Fish",attack=2,health=1):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return Fish(self.name, self.attack, self.health)
+
+class Beaver(Pet):
+    def __init__(self,name="Beaver",attack=2,health=2):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return Beaver(self.name, self.attack, self.health)
+
+class Cricket(Pet):
+    def __init__(self,name="Cricket",attack=1,health=2):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return Cricket(self.name, self.attack, self.health)
+    def faint(self):
+        return [ZCricket()]
+
+class Duck(Pet):
+    def __init__(self,name="Duck",attack=1,health=3):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return Duck(self.name, self.attack, self.health)
 
 class Fish(Pet):
     def __init__(self,name="Fish",attack=2,health=3):
@@ -31,6 +65,14 @@ class Fish(Pet):
         self.health = health
     def copy(self):
         return Fish(self.name, self.attack, self.health)
+
+class Horse(Pet):
+    def __init__(self,name="Horse",attack=2,health=1):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return Horse(self.name, self.attack, self.health)
 
 class Mosquito(Pet):
     def __init__(self,name="Mosquito",attack=2,health=2):
@@ -44,4 +86,28 @@ class Mosquito(Pet):
         damage[random.randint(0,lenOtherParty-1)] = 1
         return damage
 
-print("Pets Successfully Imported")
+class Otter(Pet):
+    def __init__(self,name="Otter",attack=1,health=2):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return Otter(self.name, self.attack, self.health)
+
+class Pig(Pet):
+    def __init__(self,name="Pig",attack=3,health=1):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return Pig(self.name, self.attack, self.health)
+
+class ZCricket(Pet):
+    def __init__(self,name="ZCricket",attack=1,health=1):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return ZCricket(self.name, self.attack, self.health)
+
+print("...Pets Successfully Imported...")

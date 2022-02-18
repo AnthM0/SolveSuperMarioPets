@@ -33,8 +33,14 @@ class Party():
     def faintScan(self):
         for pet in self.partyPets:
             if(pet.health <= 0):
-                pet.faint()
+                newPetList = pet.faint()
+                for newPet in newPetList:
+                    self.spawn(newPet)
                 self.partyPets.remove(pet)
+
+    def spawn(self, pet):
+        if(self.len() < 5):
+            self.partyPets.insert(0,pet)
 
     def startBattle(self,lenOtherParty):
         damage = arrZeros(lenOtherParty)

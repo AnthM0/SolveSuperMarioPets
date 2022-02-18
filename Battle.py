@@ -12,17 +12,19 @@ class Battle:
         self.otherParty.printF()
         print()
 
-    def startBattle(self):
+    def startBattle(self,printing=False):
         myDamage = self.myParty.startBattle(self.otherParty.len())
         otherDamage = self.otherParty.startBattle(self.myParty.len())
-        print("Start Battle:", otherDamage, "   ", myDamage)
+        if(printing):
+            print("Start Battle:", otherDamage, "   ", myDamage)
         self.myParty.takeDamage(otherDamage)
         self.otherParty.takeDamage(myDamage)
 
-    def singleAttack(self):
+    def singleAttack(self,printing=False):
         myDamage = self.myParty.getTurnDamage(self.otherParty.len())
         otherDamage = self.otherParty.getTurnDamage(self.myParty.len())
-        print("Attack: ", otherDamage, "   ", myDamage)
+        if (printing):
+            print("Attack: ", otherDamage, "   ", myDamage)
         self.myParty.takeDamage(otherDamage)
         self.otherParty.takeDamage(myDamage)
 
