@@ -1,7 +1,7 @@
-def arrZeros(length):
+def arrZeros(length,fill=0):
     arr = []
     for i in range(0,length):
-        arr.append(0)
+        arr.append(fill)
     return arr
 
 def addArr(arr1, arr2):

@@ -43,7 +43,7 @@ class Simulator:
         lossP = losses*100 / tests
         print("Win(", winP, "%), Tie(", tieP, "%), Loss(", lossP, "%)")
 
-myPets = [Cricket(),Horse()]
+myPets = [Ant(),Cricket()]
 otherPets = [Fish()]
 myParty = Party(myPets)
 otherParty = Party(otherPets)

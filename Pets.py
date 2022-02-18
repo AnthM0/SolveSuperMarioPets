@@ -24,18 +24,24 @@ class Pet:
         return arrZeros(lenOtherParty)
     def print(self):
         print(self.name,"(",self.attack,",",self.health,")   ",sep="",end="")
-    def faint(self):
+    def faintBoost(self,length):
+        return arrZeros(length,[0,0])
+    def faintSpawn(self):
         return []
     def petSpawned(self):
         return [0,0]
 
 class Ant(Pet):
-    def __init__(self,name="Fish",attack=2,health=1):
+    def __init__(self,name="Ant",attack=2,health=1):
         self.name = name
         self.attack = attack
         self.health = health
     def copy(self):
-        return Fish(self.name, self.attack, self.health)
+        return Ant(self.name, self.attack, self.health)
+    def faintBoost(self,length):
+        boosts = arrZeros(length,[0,0])
+        boosts[random.randint(0, length - 1)] = [2,1]
+        return boosts
 
 class Beaver(Pet):
     def __init__(self,name="Beaver",attack=2,health=2):
@@ -52,7 +58,7 @@ class Cricket(Pet):
         self.health = health
     def copy(self):
         return Cricket(self.name, self.attack, self.health)
-    def faint(self):
+    def faintSpawn(self):
         return [ZCricket()]
 
 class Duck(Pet):

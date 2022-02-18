@@ -33,7 +33,14 @@ class Party():
     def faintScan(self):
         for pet in self.partyPets:
             if(pet.health <= 0):
-                newPetList = pet.faint()
+                indexOfPet = self.partyPets.index(pet)
+                petBoosts = pet.faintBoost(self.len()-1)
+                for i in range(0,self.len()):
+                    if(i < indexOfPet):
+                        self.partyPets[i].boost(petBoosts[i])
+                    if(i > indexOfPet):
+                        self.partyPets[i].boost(petBoosts[i-1])
+                newPetList = pet.faintSpawn()
                 for newPet in newPetList:
                     self.spawn(newPet)
                 self.partyPets.remove(pet)
