@@ -43,11 +43,11 @@ class Simulator:
         lossP = losses*100 / tests
         print("Win(", winP, "%), Tie(", tieP, "%), Loss(", lossP, "%)")
 
-myPets = [Ant(),Cricket()]
-otherPets = [Fish()]
+myPets = [Ant(),Ant(),Cricket()]
+otherPets = [Cricket(),Cricket(),Horse()]
 myParty = Party(myPets)
 otherParty = Party(otherPets)
 
 battleSim = Simulator(myParty,otherParty)
-battleSim.runSingleBattle(myParty, otherParty, True)
-## battleSim.runMultiBattle(10000)
+##battleSim.runSingleBattle(myParty, otherParty, True)
+battleSim.runMultiBattle(10000)

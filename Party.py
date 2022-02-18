@@ -42,17 +42,16 @@ class Party():
                         self.partyPets[i].boost(petBoosts[i-1])
                 newPetList = pet.faintSpawn()
                 for newPet in newPetList:
-                    self.spawn(newPet)
+                    self.spawn(newPet,indexOfPet)
                 self.partyPets.remove(pet)
 
-    def spawn(self, newPet):
+    def spawn(self, newPet, location=0):
         if(self.len() < 5):
             addition = [0, 0]
             for pet in self.partyPets:
                 addition = addArr(addition, pet.petSpawned())
             newPet.boost(addition)
-            self.partyPets.insert(0,newPet)
-
+            self.partyPets.insert(location,newPet)
 
     def startBattle(self,lenOtherParty):
         damage = arrZeros(lenOtherParty)
