@@ -38,9 +38,14 @@ class Party():
                     self.spawn(newPet)
                 self.partyPets.remove(pet)
 
-    def spawn(self, pet):
+    def spawn(self, newPet):
         if(self.len() < 5):
-            self.partyPets.insert(0,pet)
+            addition = [0, 0]
+            for pet in self.partyPets:
+                addition = addArr(addition, pet.petSpawned())
+            newPet.boost(addition)
+            self.partyPets.insert(0,newPet)
+
 
     def startBattle(self,lenOtherParty):
         damage = arrZeros(lenOtherParty)

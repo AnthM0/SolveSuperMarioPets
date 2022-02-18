@@ -10,6 +10,9 @@ class Pet:
         return Pet(self.name, self.attack, self.health)
     def addToParty(self,party):
         self.party = party
+    def boost(self, additions):
+        self.attack += additions[0]
+        self.health += additions[1]
     def takeDamage(self,damage):
         self.health -= damage
     def getAttack(self,lenOtherParty,position):
@@ -23,6 +26,8 @@ class Pet:
         print(self.name,"(",self.attack,",",self.health,")   ",sep="",end="")
     def faint(self):
         return []
+    def petSpawned(self):
+        return [0,0]
 
 class Ant(Pet):
     def __init__(self,name="Fish",attack=2,health=1):
@@ -73,6 +78,8 @@ class Horse(Pet):
         self.health = health
     def copy(self):
         return Horse(self.name, self.attack, self.health)
+    def petSpawned(self):
+        return [1,0]
 
 class Mosquito(Pet):
     def __init__(self,name="Mosquito",attack=2,health=2):
