@@ -13,6 +13,7 @@ class Simulator:
         thisBattle = Battle(myParty, otherParty)
         if(printing):
             thisBattle.printBattle()
+            print("       ...Begin Battle...")
         thisBattle.startBattle()
         if(printing):
             thisBattle.printBattle()
@@ -22,6 +23,13 @@ class Simulator:
             if(printing):
                 thisBattle.printBattle()
             outcome = thisBattle.checkOutcome()
+        if(printing):
+            if(outcome == 1):
+                print("You Win!")
+            elif(outcome == -1):
+                print("You Lost...")
+            else:
+                print("You Tied.")
         return outcome
 
     def runMultiBattle(self,tests):
@@ -44,11 +52,11 @@ class Simulator:
         print("Win(", winP, "%), Tie(", tieP, "%), Loss(", lossP, "%)")
 
 
-myPets = [Ant(),Ant(),Cricket()]
-otherPets = [Fish(),Fish(),Fish()]
+myPets = [Sheep()]
+otherPets = [Rooster()]
 myParty = Party(myPets)
 otherParty = Party(otherPets)
 
 battleSim = Simulator(myParty,otherParty)
-##battleSim.runSingleBattle(myParty, otherParty, True)
-battleSim.runMultiBattle(10000)
+battleSim.runSingleBattle(myParty, otherParty, True)
+##battleSim.runMultiBattle(10000)

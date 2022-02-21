@@ -125,6 +125,14 @@ class ZCricket(Pet):
     def copy(self):
         return ZCricket(self.attack, self.health, self.name)
 
+class Bee(Pet):
+    def __init__(self,attack=1,health=1,name="Bee"):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return Bee(self.attack, self.health, self.name)
+
 
 ## Tier Two Pets ##
 ## Missing Dodo, Elephant, Hedgehog, Peacock, Rat, Spider
@@ -167,9 +175,17 @@ class Swan(Pet):
     def copy(self):
         return Swan(self.attack, self.health, self.name)
 
+class DirtyRat(Pet):
+    def __init__(self,attack=1,health=1,name="DirtyRat"):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return DirtyRat(self.attack, self.health, self.name)
+
 
 ## Tier Three Pets ##
-## Missing Badger, Blowfish, Camel, Kangaroo, Ox, Sheep, Turtle,
+## Missing Badger, Blowfish, Camel, Kangaroo, Ox, Turtle
 class Dog(Pet):
     def __init__(self,attack=2,health=2,name="Dog"):
         self.name = name
@@ -200,6 +216,16 @@ class Rabbit(Pet):
     def copy(self):
         return Rabbit(self.attack, self.health, self.name)
 
+class Sheep(Pet):
+    def __init__(self,attack=2,health=2,name="Sheep"):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return Sheep(self.attack, self.health, self.name)
+    def faintSpawn(self):
+        return [Ram(), Ram()]
+
 class Snail(Pet):
     def __init__(self,attack=2,health=2,name="Snail"):
         self.name = name
@@ -208,10 +234,17 @@ class Snail(Pet):
     def copy(self):
         return Snail(self.attack, self.health, self.name)
 
+class Ram(Pet):
+    def __init__(self,attack=2,health=2,name="Ram"):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return Ram(self.attack, self.health, self.name)
+
 
 ## Tier Four Pets ##
-## Missing Whale, Deer, Dophin, Hippo, Rooster, Skunk,
-
+## Missing Whale, Dophin, Hippo, Rooster, Skunk,
 class Bison(Pet):
     def __init__(self,attack=6,health=6,name="Bison"):
         self.name = name
@@ -220,6 +253,16 @@ class Bison(Pet):
     def copy(self):
         return Bison(self.attack, self.health, self.name)
 
+class Deer(Pet):
+    def __init__(self,attack=1,health=1,name="Deer"):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return Deer(self.attack, self.health, self.name)
+    def faintSpawn(self):
+        return [ZCricket()]
+
 class Penguin(Pet):
     def __init__(self,attack=1,health=2,name="Penguin"):
         self.name = name
@@ -227,6 +270,17 @@ class Penguin(Pet):
         self.health = health
     def copy(self):
         return Penguin(self.attack, self.health, self.name)
+
+class Rooster(Pet):
+    def __init__(self,attack=5,health=3,name="Rooster"):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return Rooster(self.attack, self.health, self.name)
+    def faintSpawn(self):
+        chickAttack = int(self.attack/2)
+        return [Chick(chickAttack,1)]
 
 class Squirrel(Pet):
     def __init__(self,attack=2,health=2,name="Squirrel"):
@@ -244,10 +298,24 @@ class Worm(Pet):
     def copy(self):
         return Worm(self.attack, self.health, self.name)
 
+class Bus(Pet):
+    def __init__(self,attack=5,health=5,name="Bus"):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return Bus(self.attack, self.health, self.name)
+
+class Chick(Pet):
+    def __init__(self,attack=3,health=1,name="Chick"):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return Chick(self.attack, self.health, self.name)
 
 ## Tier Five Pets ##
 ## Missing Crocodile, Rhino, Shark
-
 class Monkey(Pet):
     def __init__(self,attack=1,health=2,name="Monkey"):
         self.name = name
@@ -293,7 +361,6 @@ class Turkey(Pet):
 
 ## Tier Six Pets ##
 ## Missing Boar, Fly, Gorilla, Snake, Tiger
-
 class Cat(Pet):
     def __init__(self,attack=4,health=5,name="Cat"):
         self.name = name
@@ -332,3 +399,11 @@ class Mammoth(Pet):
     def faintBoost(self,length):
         boosts = arrZeros(length,[2,2])
         return boosts
+
+class ZFly(Pet):
+    def __init__(self,attack=5,health=5,name="ZFly"):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return ZFly(self.attack, self.health, self.name)
