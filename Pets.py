@@ -1,6 +1,14 @@
 import random
 from OtherFunctions import *
 
+#
+# Missing Dodo, Elephant, Hedgehog, Rat, Spider
+# Missing Badger, Blowfish, Camel, Kangaroo, Ox, Turtle
+# Missing Whale, Hippo, Skunk
+# Missing Rhino
+# Missing Boar, Fly, Gorilla, Snake, Tiger
+
+
 class Pet:
     def __init__(self,attack,health,name):
         self.name = name
@@ -10,12 +18,15 @@ class Pet:
         return Pet(self.attack, self.health, self.name)
     def addToParty(self,party):
         self.party = party
+    def print(self):
+        print(self.name,"(",self.attack,",",self.health,")   ",sep="",end="")
+
     def boost(self, additions):
         self.attack += additions[0]
         self.health += additions[1]
     def boostFromFaint(self, additions):
-        self.attack += additions[0]
-        self.health += additions[1]
+        self.boost(additions)
+
     def takeDamage(self,damage):
         self.health -= damage
     def getAttack(self,lenOtherParty,position):
@@ -23,14 +34,17 @@ class Pet:
         if(position == 0):
             damageArr[0] += self.attack
         return damageArr
-    def startBattle(self,lenOtherParty):
+
+    def startBattleDamage(self, lenOtherParty, lowHealthIndex):
         return arrZeros(lenOtherParty)
-    def print(self):
-        print(self.name,"(",self.attack,",",self.health,")   ",sep="",end="")
+
     def faintBoost(self,length):
         return arrZeros(length,[0,0])
     def faintSpawn(self):
         return []
+    def faintDamage(self,location,lenParty,lenOtherParty):
+        return [False,arrZeros(lenOtherParty,0),arrZeros(lenParty,0)]
+
     def petSpawned(self):
         return [0,0]
 
@@ -99,7 +113,7 @@ class Mosquito(Pet):
         self.health = health
     def copy(self):
         return Mosquito(self.attack, self.health, self.name)
-    def startBattle(self,lenOtherParty):
+    def startBattleDamage(self, lenOtherParty, lowHealthIndex):
         damage = arrZeros(lenOtherParty)
         damage[random.randint(0,lenOtherParty-1)] = 1
         return damage
@@ -161,14 +175,6 @@ class Flamingo(Pet):
             if(len(boosts) > 1):
                 boosts[1] = [1, 1]
         return boosts
-
-class Hedgehog(Pet):
-    def __init__(self,attack=3,health=2,name="Hedgehog"):
-        self.name = name
-        self.attack = attack
-        self.health = health
-    def copy(self):
-        return Hedgehog(self.attack, self.health, self.name)
 
 class Peacock(Pet):
     def __init__(self,attack=1,health=5,name="Peacock"):
@@ -269,7 +275,7 @@ class Ram(Pet):
 
 
 ## Tier Four Pets ##
-## Missing Whale, Dophin, Hippo, Skunk,
+## Missing Whale, Dolphin, Hippo, Skunk,
 class Bison(Pet):
     def __init__(self,attack=6,health=6,name="Bison"):
         self.name = name
@@ -286,7 +292,19 @@ class Deer(Pet):
     def copy(self):
         return Deer(self.attack, self.health, self.name)
     def faintSpawn(self):
-        return [ZCricket()]
+        return [Bus()]
+
+class Dolphin(Pet):
+    def __init__(self,attack=4,health=6,name="Dolphin"):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return Dolphin(self.attack, self.health, self.name)
+    def startBattleDamage(self, lenOtherParty,lowHealthIndex):
+        damage = arrZeros(lenOtherParty)
+        damage[lowHealthIndex] = 5
+        return damage
 
 class Penguin(Pet):
     def __init__(self,attack=1,health=2,name="Penguin"):
@@ -364,7 +382,7 @@ class Crocodile(Pet):
         self.health = health
     def copy(self):
         return Crocodile(self.attack, self.health, self.name)
-    def startBattle(self,lenOtherParty):
+    def startBattleDamage(self, lenOtherParty, lowHealthIndex):
         damage = arrZeros(lenOtherParty)
         damage[lenOtherParty-1] = 8
         print(damage)
@@ -433,7 +451,7 @@ class Leopard(Pet):
         self.health = health
     def copy(self):
         return Leopard(self.attack, self.health, self.name)
-    def startBattle(self,lenOtherParty):
+    def startBattleDamage(self, lenOtherParty, lowHealthIndex):
         damage = arrZeros(lenOtherParty)
         damage[random.randint(0,lenOtherParty-1)] = int(self.attack/2)
         return damage

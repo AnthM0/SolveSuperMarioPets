@@ -13,8 +13,8 @@ class Battle:
         print()
 
     def startBattle(self,printing=False):
-        myDamage = self.myParty.startBattle(self.otherParty.len())
-        otherDamage = self.otherParty.startBattle(self.myParty.len())
+        myDamage = self.myParty.startBattleDamage(self.otherParty.len(), self.otherParty.lowHealthIndex())
+        otherDamage = self.otherParty.startBattleDamage(self.myParty.len(), self.myParty.lowHealthIndex())
         if(printing):
             print("Start Battle:", otherDamage, "   ", myDamage)
         self.myParty.takeDamage(otherDamage)

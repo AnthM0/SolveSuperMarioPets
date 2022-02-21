@@ -22,6 +22,14 @@ class Party():
 
     def len(self):
         return len(self.partyPets)
+    def lowHealthIndex(self):
+        lowHealth = 100
+        retIndex = 0
+        for i in range(0,self.len()):
+            if(self.partyPets[i].health < lowHealth):
+                lowHealth = self.partyPets[i].health
+                retIndex = i
+        return retIndex
 
     def printF(self):
         for pet in self.partyPets:
@@ -29,6 +37,19 @@ class Party():
     def printB(self):
         for pet in reversed(self.partyPets):
             pet.print()
+
+    # def faintDamageScan(self):
+    #     faintDamageFlag = False
+    #     myPartyDamageArr = arrZeros(self.len(),0)
+    #     otherPartyDamageArr = arrZeros(5,0)
+    #     for pet in self.partyPets:
+    #         if(pet.health <= 0):
+    #             faintDamageArr = pet.faintDamage(1, self.len(), 5)
+    #             if(faintDamageArr[0]):
+    #                 faintDamageFlag = True
+    #                 myPartyDamageArr = addArr(myPartyDamageArr,faintDamageArr[1])
+    #                 otherPartyDamageArr = addArr(otherPartyDamageArr, faintDamageArr[2])
+    #     return([faintDamageFlag,myPartyDamageArr,otherPartyDamageArr])
 
     def faintScan(self):
         faintedPets = [["PH"]]
@@ -56,10 +77,10 @@ class Party():
             newPet.boost(addition)
             self.partyPets.insert(location,newPet)
 
-    def startBattle(self,lenOtherParty):
+    def startBattleDamage(self,lenOtherParty,lowHealthIndex):
         damage = arrZeros(lenOtherParty)
         for pet in self.partyPets:
-            damage = addArr(damage, pet.startBattle(lenOtherParty))
+            damage = addArr(damage, pet.startBattleDamage(lenOtherParty,lowHealthIndex))
         return damage
 
     def takeDamage(self,damageArr):

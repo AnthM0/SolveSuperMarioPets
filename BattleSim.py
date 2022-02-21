@@ -53,8 +53,8 @@ class Simulator:
         print("Win(", winP, "%), Tie(", tieP, "%), Loss(", lossP, "%)")
 
 
-myPets = [Sheep()]
-otherPets = [Peacock()]
+myPets = [Dolphin()]
+otherPets = [Mosquito(), Mammoth()]
 myParty = Party(myPets)
 otherParty = Party(otherPets)
 
