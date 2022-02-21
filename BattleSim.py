@@ -13,10 +13,11 @@ class Simulator:
         thisBattle = Battle(myParty, otherParty)
         if(printing):
             thisBattle.printBattle()
-            print("       ...Begin Battle...")
+            print("       ...Pre Battle...")
         thisBattle.startBattle()
         if(printing):
             thisBattle.printBattle()
+            print("       ...Start Battle...")
         outcome = 69
         while outcome == 69:
             thisBattle.singleAttack()
@@ -52,8 +53,8 @@ class Simulator:
         print("Win(", winP, "%), Tie(", tieP, "%), Loss(", lossP, "%)")
 
 
-myPets = [Cricket(),Turkey(),Shark()]
-otherPets = [Mammoth(),Mosquito(), Mosquito()]
+myPets = [Sheep()]
+otherPets = [Peacock()]
 myParty = Party(myPets)
 otherParty = Party(otherPets)
 

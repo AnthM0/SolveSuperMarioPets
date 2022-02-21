@@ -138,7 +138,7 @@ class Bee(Pet):
 
 
 ## Tier Two Pets ##
-## Missing Dodo, Elephant, Hedgehog, Peacock, Rat, Spider
+## Missing Dodo, Elephant, Hedgehog, Rat, Spider
 class Crab(Pet):
     def __init__(self,attack=3,health=3,name="Crab"):
         self.name = name
@@ -161,6 +161,28 @@ class Flamingo(Pet):
             if(len(boosts) > 1):
                 boosts[1] = [1, 1]
         return boosts
+
+class Hedgehog(Pet):
+    def __init__(self,attack=3,health=2,name="Hedgehog"):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return Hedgehog(self.attack, self.health, self.name)
+
+class Peacock(Pet):
+    def __init__(self,attack=1,health=5,name="Peacock"):
+        self.name = name
+        self.attack = attack
+        self.health = health
+        self.abilityUses = 1
+    def copy(self):
+        return Peacock(self.attack, self.health, self.name)
+    def takeDamage(self,damage):
+        if(damage > 0 and self.abilityUses > 0):
+            self.attack += int((self.attack+1)/2)
+            self.abilityUses -= 1
+        self.health -= damage
 
 class Shrimp(Pet):
     def __init__(self,attack=2,health=3,name="Shrimp"):
@@ -247,7 +269,7 @@ class Ram(Pet):
 
 
 ## Tier Four Pets ##
-## Missing Whale, Dophin, Hippo, Rooster, Skunk,
+## Missing Whale, Dophin, Hippo, Skunk,
 class Bison(Pet):
     def __init__(self,attack=6,health=6,name="Bison"):
         self.name = name
@@ -318,7 +340,7 @@ class Chick(Pet):
         return Chick(self.attack, self.health, self.name)
 
 ## Tier Five Pets ##
-## Missing Crocodile, Rhino, Shark
+## Missing Rhino
 class Monkey(Pet):
     def __init__(self,attack=1,health=2,name="Monkey"):
         self.name = name
@@ -334,6 +356,19 @@ class Cow(Pet):
         self.health = health
     def copy(self):
         return Cow(self.attack, self.health, self.name)
+
+class Crocodile(Pet):
+    def __init__(self,attack=8,health=4,name="Crocodile"):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return Crocodile(self.attack, self.health, self.name)
+    def startBattle(self,lenOtherParty):
+        damage = arrZeros(lenOtherParty)
+        damage[lenOtherParty-1] = 8
+        print(damage)
+        return damage
 
 class Scorpion(Pet):
     def __init__(self,attack=1,health=1,name="Scorpion"):
