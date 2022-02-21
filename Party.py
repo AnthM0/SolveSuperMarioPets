@@ -31,19 +31,22 @@ class Party():
             pet.print()
 
     def faintScan(self):
+        faintedPets = [["PH"]]
         for pet in self.partyPets:
             if(pet.health <= 0):
                 indexOfPet = self.partyPets.index(pet)
-                petBoosts = pet.faintBoost(self.len()-1)
-                for i in range(0,self.len()):
-                    if(i < indexOfPet):
-                        self.partyPets[i].boost(petBoosts[i])
-                    if(i > indexOfPet):
-                        self.partyPets[i].boost(petBoosts[i-1])
-                newPetList = pet.faintSpawn()
-                for newPet in newPetList:
-                    self.spawn(newPet,indexOfPet)
+                faintedPets.append([pet, indexOfPet])
                 self.partyPets.remove(pet)
+        faintedPets.remove(["PH"])
+        ##print(faintedPets)
+        for petArr in faintedPets:
+            petBoosts = petArr[0].faintBoost(self.len())
+            for i in range(0, self.len()):
+                self.partyPets[i].boostFromFaint(petBoosts[i])
+        for petArr in faintedPets:
+            newPetList = petArr[0].faintSpawn()
+            for newPet in newPetList:
+                self.spawn(newPet, petArr[1])
 
     def spawn(self, newPet, location=0):
         if(self.len() < 5):

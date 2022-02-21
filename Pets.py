@@ -13,6 +13,9 @@ class Pet:
     def boost(self, additions):
         self.attack += additions[0]
         self.health += additions[1]
+    def boostFromFaint(self, additions):
+        self.attack += additions[0]
+        self.health += additions[1]
     def takeDamage(self,damage):
         self.health -= damage
     def getAttack(self,lenOtherParty,position):
@@ -347,6 +350,17 @@ class Seal(Pet):
         self.health = health
     def copy(self):
         return Seal(self.attack, self.health, self.name)
+
+class Shark(Pet):
+    def __init__(self, attack=4, health=4, name="Shark"):
+        self.name = name
+        self.attack = attack
+        self.health = health
+    def copy(self):
+        return Shark(self.attack, self.health, self.name)
+    def boostFromFaint(self, additions):
+        self.attack += additions[0] + 2
+        self.health += additions[1] + 1
 
 class Turkey(Pet):
     def __init__(self,attack=3,health=4,name="Turkey"):
