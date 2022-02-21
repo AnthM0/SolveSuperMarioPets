@@ -1,4 +1,4 @@
-from OtherFunctions import *
+from SolveSuperMarioPets.OtherFunctions import *
 
 class Party():
     def copy(self):
@@ -60,10 +60,11 @@ class Party():
                 self.partyPets.remove(pet)
         faintedPets.remove(["PH"])
         ##print(faintedPets)
-        for petArr in faintedPets:
-            petBoosts = petArr[0].faintBoost(self.len())
-            for i in range(0, self.len()):
-                self.partyPets[i].boostFromFaint(petBoosts[i])
+        if(self.len() > 0):
+            for petArr in faintedPets:
+                petBoosts = petArr[0].faintBoost(self.len())
+                for i in range(0, self.len()):
+                    self.partyPets[i].boostFromFaint(petBoosts[i])
         for petArr in faintedPets:
             newPetList = petArr[0].faintSpawn()
             for newPet in newPetList:

@@ -1,4 +1,4 @@
-from Pets import *
+from SolveSuperMarioPets.Pets import *
 
 roundOneTeams = [[Ant(),Ant(),Fish()],
                  [Fish(),Fish(),Fish()],

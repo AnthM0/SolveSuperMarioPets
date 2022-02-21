@@ -1,8 +1,6 @@
-import random
-from Pets import *
-from Party import *
-from Battle import *
-from OtherFunctions import *
+from SolveSuperMarioPets.Pets import *
+from SolveSuperMarioPets.Party import *
+from SolveSuperMarioPets.Battle import *
 
 class Simulator:
     def __init__(self,myPets=Party([Fish()]),otherPets=Party([Fish()])):
@@ -18,7 +16,7 @@ class Simulator:
         if(printing):
             thisBattle.printBattle()
             print("       ...Start Battle...")
-        outcome = 69
+        outcome = thisBattle.checkOutcome()
         while outcome == 69:
             thisBattle.singleAttack()
             if(printing):
@@ -53,8 +51,8 @@ class Simulator:
         print("Win(", winP, "%), Tie(", tieP, "%), Loss(", lossP, "%)")
 
 
-myPets = [Dolphin()]
-otherPets = [Mosquito(), Mammoth()]
+myPets = [Mosquito()]
+otherPets = [Mammoth()]
 myParty = Party(myPets)
 otherParty = Party(otherPets)
 
