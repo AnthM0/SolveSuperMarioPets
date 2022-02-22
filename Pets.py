@@ -99,9 +99,12 @@ class Mosquito(Pet):
     def copy(self):
         return Mosquito(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def start_battle(self, party, other_party):
-        selections = random.sample(range(0, other_party.len()), min(self.level, other_party.len()))
-        for i in selections:
-            other_party.partyPets[i].take_damage(1, other_party, party)
+        attacks = self.level
+        while attacks > 0:
+            selections = random.sample(range(0, other_party.len()), min(attacks, other_party.len()))
+            for i in selections:
+                other_party.partyPets[i].take_damage(1, other_party, party)
+                attacks -= 1
         return True
 
 
@@ -520,9 +523,7 @@ class Crocodile(Pet):
     def copy(self):
         return Crocodile(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def start_battle(self, party, other_party):
-        damage = arrZeros(other_party.len())
-        damage[-1] = 8*self.level
-        other_party.take_damage(damage, party)
+        other_party.partyPets[-1].take_damage(8*self.level, other_party, party)
         return True
 
 
@@ -625,11 +626,12 @@ class Leopard(Pet):
     def copy(self):
         return Leopard(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def start_battle(self, party, other_party):
-        damage = arrZeros(other_party.len())
-        selections = random.sample(range(0, other_party.len()), min(self.level, other_party.len()))
-        for i in selections:
-            damage[i] = int((self.attack+1)/2)
-        other_party.take_damage(damage, party)
+        attacks = self.level
+        while attacks > 0:
+            selections = random.sample(range(0, other_party.len()), min(attacks, other_party.len()))
+            for i in selections:
+                other_party.partyPets[i].take_damage(int((self.attack+1)/2), other_party, party)
+                attacks -= 1
         return True
 
 
