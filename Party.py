@@ -1,4 +1,3 @@
-from SolveSuperMarioPets.OtherFunctions import *
 from SolveSuperMarioPets.Pets import *
 
 
@@ -87,10 +86,6 @@ class Party:
                 self.partyPets.insert(location, new_pet)
                 success = True
         return success
-
-    def take_damage(self, damage_array, other_party):
-        for i in range(0, len(self.partyPets)):
-            self.partyPets[i].take_damage(damage_array[i], self, other_party)
 
     def before_attack(self, other_party):
         return self.partyPets[0].before_attack(self, other_party)

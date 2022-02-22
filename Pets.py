@@ -1,5 +1,4 @@
 import random
-from SolveSuperMarioPets.OtherFunctions import *
 
 
 class Pet:
