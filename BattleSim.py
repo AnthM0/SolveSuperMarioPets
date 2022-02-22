@@ -53,16 +53,16 @@ class Simulator:
         print("Win(", win_p, "%), Tie(", tie_p, "%), Loss(", loss_p, "%)")
 
 
-myPets = [Mosquito(2, 2, 3)]
-otherPets = [Fish()]
+myPets = [Sheep(item=Mushroom())]
+otherPets = [Mammoth()]
 myParty = Party(myPets)
 otherParty = Party(otherPets)
 
 myBattle = Battle(myParty, otherParty)
 myBattle.start_battle(True)
-# myBattle.before_attack(True)
-# myBattle.make_attack(True)
-# myBattle.after_attack(True)
+myBattle.before_attack(True)
+myBattle.make_attack(True)
+myBattle.after_attack(True)
 
 # battleSim = Simulator(myParty, otherParty)
 # battleSim.single_battle(myParty, otherParty, True)
