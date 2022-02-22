@@ -1,23 +1,17 @@
 import random
 from SolveSuperMarioPets.OtherFunctions import *
 
-#
-# Missing Elephant, Hedgehog, Spider
-# Missing Badger, Blowfish, Camel
-# Missing Hippo
-# Missing Rhino
-# Missing Fly, Gorilla, Tiger
-
 
 class Pet:
-    def __init__(self, attack, health, level, item, name):
+    def __init__(self, attack, health, level, item, name, hurt=False):
         self.name = name
         self.attack = attack
         self.health = health
         self.level = level
         self.item = item
+        self.hurt = hurt
     def copy(self):
-        return Pet(self.attack, self.health, self.level, self.item, self.name)
+        return Pet(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def print(self):
         print(self.name, "(", self.attack, ",", self.health, ")   ", sep="", end="")
 
@@ -26,6 +20,10 @@ class Pet:
         self.health += additions[1]
     def take_damage(self, damage, party, other_party):
         self.health -= damage
+        self.hurt = True
+    def was_hurt(self, party, other_party):
+        self.hurt = False
+        return False
 
     def start_battle(self, party, other_party):
         return False
@@ -35,71 +33,71 @@ class Pet:
         other_party.partyPets[0].take_damage(self.attack, my_party, other_party)
     def after_attack(self, location, party, other_party):
         return False
-    def faint_damage(self, location, party, other_party):
-        return False
     def faint(self, location, party, other_party):
-        return
+        return False
     def friend_has_fainted(self, number, prev_party, n_party):
-        return
+        return False
+    def foe_has_fainted(self, old_foe_party, new_foe_party, party):
+        return False
     def new_pet_spawning(self, new_pet):
-        return
+        return False
 
 
-# Tier One Pets ##
+# Tier One Pets #
 class Ant(Pet):
-    def __init__(self, attack=2, health=1, level=1, item=None, name="Ant"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=2, health=1, level=1, item=None, name="Ant", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Ant(self.attack, self.health, self.level, self.item, self.name)
+        return Ant(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def faint(self, location, party, other_party):
         party.partyPets[random.randint(0, party.len()-1)].boost([2*self.level, self.level])
 
 
 class Beaver(Pet):
-    def __init__(self, attack=2, health=2, level=1, item=None, name="Beaver"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=2, health=2, level=1, item=None, name="Beaver", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Beaver(self.attack, self.health, self.level, self.item, self.name)
+        return Beaver(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Cricket(Pet):
-    def __init__(self, attack=1, health=2, level=1, item=None, name="Cricket"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=1, health=2, level=1, item=None, name="Cricket", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Cricket(self.attack, self.health, self.level, self.item, self.name)
+        return Cricket(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def faint(self, location, party, other_party):
         spawns = [ZCricket(self.level, self.level, self.level)]
         party.spawn(spawns, location)
 
 
 class Duck(Pet):
-    def __init__(self, attack=1, health=3, level=1, item=None, name="Duck"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=1, health=3, level=1, item=None, name="Duck", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Duck(self.attack, self.health, self.level, self.item, self.name)
+        return Duck(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Fish(Pet):
-    def __init__(self, attack=2, health=3, level=1, item=None, name="Fish"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=2, health=3, level=1, item=None, name="Fish", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Fish(self.attack, self.health, self.level, self.item, self.name)
+        return Fish(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Horse(Pet):
-    def __init__(self, attack=2, health=1, level=1, item=None, name="Horse"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=2, health=1, level=1, item=None, name="Horse", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Horse(self.attack, self.health, self.level, self.item, self.name)
+        return Horse(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def new_pet_spawning(self, new_pet):
         new_pet.boost([self.level, 0])
 
 
 class Mosquito(Pet):
-    def __init__(self, attack=2, health=2, level=1, item=None, name="Mosquito"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=2, health=2, level=1, item=None, name="Mosquito", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Mosquito(self.attack, self.health, self.level, self.item, self.name)
+        return Mosquito(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def start_battle(self, party, other_party):
         selections = random.sample(range(0, other_party.len()), min(self.level, other_party.len()))
         for i in selections:
@@ -108,47 +106,46 @@ class Mosquito(Pet):
 
 
 class Otter(Pet):
-    def __init__(self, attack=1, health=2, level=1, item=None, name="Otter"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=1, health=2, level=1, item=None, name="Otter", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Otter(self.attack, self.health, self.level, self.item, self.name)
+        return Otter(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Pig(Pet):
-    def __init__(self, attack=3, health=1, level=1, item=None, name="Pig"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=3, health=1, level=1, item=None, name="Pig", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Pig(self.attack, self.health, self.level, self.item, self.name)
+        return Pig(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class ZCricket(Pet):
-    def __init__(self, attack=1, health=1, level=1, item=None, name="ZCricket"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=1, health=1, level=1, item=None, name="ZCricket", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return ZCricket(self.attack, self.health, self.level, self.item, self.name)
+        return ZCricket(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Bee(Pet):
-    def __init__(self, attack=1, health=1, level=1, item=None, name="Bee"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=1, health=1, level=1, item=None, name="Bee", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Bee(self.attack, self.health, self.level, self.item, self.name)
+        return Bee(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
-# Tier Two Pets
-# Missing Elephant, Hedgehog, Rat, Spider, Flamingo
+# Tier Two Pets #
 class Crab(Pet):
-    def __init__(self, attack=3, health=3, level=1, item=None, name="Crab"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=3, health=3, level=1, item=None, name="Crab", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Crab(self.attack, self.health, self.level, self.item, self.name)
+        return Crab(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Dodo(Pet):
-    def __init__(self, attack=2, health=3, level=1, item=None, name="Dodo"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=2, health=3, level=1, item=None, name="Dodo", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Dodo(self.attack, self.health, self.level, self.item, self.name)
+        return Dodo(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def start_battle(self, party, other_party):
         if party.position(self) != 0:
             party.partyPets[party.position(self) - 1].boost([int((self.attack+1)/2*self.level), 0])
@@ -156,51 +153,65 @@ class Dodo(Pet):
 
 
 class Elephant(Pet):
-    def __init__(self, attack=3, health=5, level=1, item=None, name="Elephant"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=3, health=5, level=1, item=None, name="Elephant", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Elephant(self.attack, self.health, self.level, self.item, self.name)
-    def before_attack(self, party, otherParty):
+        return Elephant(self.attack, self.health, self.level, self.item, self.name, self.hurt)
+    def before_attack(self, party, other_party):
         if party.position(self) == 0 and party.len() > 1:
-            party.partyPets[1].take_damage(1, party, otherParty)
+            party.partyPets[1].take_damage(1, party, other_party)
             if party.len() > 2 and self.level > 1:
-                party.partyPets[2].take_damage(1, party, otherParty)
+                party.partyPets[2].take_damage(1, party, other_party)
                 if party.len() > 3 and self.level > 2:
-                    party.partyPets[3].take_damage(1, party, otherParty)
+                    party.partyPets[3].take_damage(1, party, other_party)
             return True
         return False
 
 
 class Flamingo(Pet):
-    def __init__(self, attack=3, health=1, level=1, item=None, name="Flamingo"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=3, health=1, level=1, item=None, name="Flamingo", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Flamingo(self.attack, self.health, self.level, self.item, self.name)
+        return Flamingo(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def faint(self, location, party, other_party):
         if location < party.len():
             party.partyPets[location].boost([self.level, self.level])
         if (location+1) < party.len():
             party.partyPets[location+1].boost([self.level, self.level])
+        return False
+
+
+class Hedgehog(Pet):
+    def __init__(self, attack=3, health=2, level=1, item=None, name="Hedgehog", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
+    def copy(self):
+        return Hedgehog(self.attack, self.health, self.level, self.item, self.name, self.hurt)
+    def faint(self, location, party, other_party):
+        for pet in party:
+            pet.take_damage(2, party, other_party)
+        for pet in other_party:
+            pet.take_damage(2, other_party, party)
+        return True
 
 
 class Peacock(Pet):
-    def __init__(self, attack=1, health=5, level=1, item=None, name="Peacock"):
+    def __init__(self, attack=1, health=5, level=1, item=None, name="Peacock", hurt=False):
         self.abilityUses = self.level
-        super().__init__(attack, health, level, item, name)
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Peacock(self.attack, self.health, self.level, self.item, self.name)
-    def take_damage(self, damage, party, otherParty):
-        if damage > 0 and self.abilityUses > 0:
+        return Peacock(self.attack, self.health, self.level, self.item, self.name, self.hurt)
+    def was_hurt(self, party, other_party):
+        if self.abilityUses > 0:
             self.attack += int((self.attack+1)/2)
             self.abilityUses -= 1
-        super().take_damage(damage, party, otherParty)
+        return super().was_hurt(party, other_party)
 
 
 class Rat(Pet):
-    def __init__(self, attack=4, health=5, level=1, item=None, name="Rat"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=4, health=5, level=1, item=None, name="Rat", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Rat(self.attack, self.health, self.level, self.item, self.name)
+        return Rat(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def faint(self, location, party, other_party):
         spawns = []
         for i in range(0, self.level):
@@ -209,33 +220,53 @@ class Rat(Pet):
 
 
 class Shrimp(Pet):
-    def __init__(self, attack=2, health=3, level=1, item=None, name="Shrimp"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=2, health=3, level=1, item=None, name="Shrimp", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Shrimp(self.attack, self.health, self.level, self.item, self.name)
+        return Shrimp(self.attack, self.health, self.level, self.item, self.name, self.hurt)
+
+
+class Spider(Pet):
+    def __init__(self, attack=2, health=2, level=1, item=None, name="Spider", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
+    def copy(self):
+        return Spider(self.attack, self.health, self.level, self.item, self.name, self.hurt)
+    def faint(self, location, party, other_party):
+        pets = [Dog(2, 2, self.level),
+                Badger(2, 2, self.level),
+                Blowfish(2, 2, self.level),
+                Camel(2, 2, self.level),
+                Giraffe(2, 2, self.level),
+                Kangaroo(2, 2, self.level),
+                Ox(2, 2, self.level),
+                Rabbit(2, 2, self.level),
+                Sheep(2, 2, self.level),
+                Snail(2, 2, self.level),
+                Turtle(2, 2, self.level)]
+        spawns = [pets[random.randint(0,len(pets))]]
+        party.spawn(spawns, location)
 
 
 class Swan(Pet):
-    def __init__(self,attack=1,health=3,level=1,item=None,name="Swan"):
-        super().__init__(attack,health,level,item,name)
+    def __init__(self, attack=1, health=3, level=1, item=None, name="Swan", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Swan(self.attack, self.health, self.level, self.item, self.name)
+        return Swan(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class DirtyRat(Pet):
-    def __init__(self, attack=1, health=1, level=1, item=None, name="DirtyRat"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=1, health=1, level=1, item=None, name="DirtyRat", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return DirtyRat(self.attack, self.health, self.level, self.item, self.name)
+        return DirtyRat(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
-# Tier Three Pets ##
-# Missing Badger, Blowfish, Camel
+# Tier Three Pets #
 class Dog(Pet):
-    def __init__(self, attack=2, health=2, level=1, item=None, name="Dog"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=2, health=2, level=1, item=None, name="Dog", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Dog(self.attack, self.health, self.level, self.item, self.name)
+        return Dog(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def new_pet_spawning(self, new_pet):
         if random.randint(0, 1) == 0:
             self.attack += self.level
@@ -243,18 +274,56 @@ class Dog(Pet):
             self.health += self.level
 
 
-class Giraffe(Pet):
-    def __init__(self, attack=2, health=5, level=1, item=None, name="Giraffe"):
-        super().__init__(attack, health, level, item, name)
+class Badger(Pet):
+    def __init__(self, attack=5, health=4, level=1, item=None, name="Badger", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Giraffe(self.attack, self.health, self.level, self.item, self.name)
+        return Badger(self.attack, self.health, self.level, self.item, self.name, self.hurt)
+    def faint(self, location, party, other_party):
+        damage = self.attack*self.level
+        if location == 0:
+            other_party.partyPets[0].take_damage(damage, other_party, party)
+        if location < party.len():
+            party.partyPets[location].take_damage(damage, party, other_party)
+        return True
+
+
+class Blowfish(Pet):
+    def __init__(self, attack=3, health=5, level=1, item=None, name="Blowfish", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
+    def copy(self):
+        return Blowfish(self.attack, self.health, self.level, self.item, self.name, self.hurt)
+    def was_hurt(self, party, other_party):
+        if self.hurt:
+            other_party.partyPets[random.randint(0, other_party.len()-1)].take_damage(2*self.level, other_party, party)
+            self.hurt = False
+            return True
+        return super().was_hurt(party, other_party)
+
+
+class Camel(Pet):
+    def __init__(self, attack=2, health=5, level=1, item=None, name="Camel", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
+    def copy(self):
+        return Camel(self.attack, self.health, self.level, self.item, self.name, self.hurt)
+    def was_hurt(self, party, other_party):
+        if party.len() > (party.position(self)+1):
+            party.partyPets[(party.position(self)+1)].boost([self.level, 2*self.level])
+        return super().was_hurt(party, other_party)
+
+
+class Giraffe(Pet):
+    def __init__(self, attack=2, health=5, level=1, item=None, name="Giraffe", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
+    def copy(self):
+        return Giraffe(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Kangaroo(Pet):
-    def __init__(self, attack=2, health=5, level=1, item=None, name="Kangaroo"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=2, health=5, level=1, item=None, name="Kangaroo", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Kangaroo(self.attack, self.health, self.level, self.item, self.name)
+        return Kangaroo(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def after_attack(self, location, party, other_party):
         if location == 1:
             self.boost([2*self.level, 2*self.level])
@@ -262,10 +331,10 @@ class Kangaroo(Pet):
 
 
 class Ox(Pet):
-    def __init__(self, attack=1, health=4, level=1, item=None, name="Ox"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=1, health=4, level=1, item=None, name="Ox", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Ox(self.attack, self.health, self.level, self.item, self.name)
+        return Ox(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def friend_has_fainted(self, number, prev_party, n_party):
         old_position = prev_party.position(self)
         new_position = n_party.position(self)
@@ -276,53 +345,51 @@ class Ox(Pet):
                 self.boost([2 * self.level, 0])
 
 
-
 class Rabbit(Pet):
-    def __init__(self, attack=3, health=2, level=1, item=None, name="Rabbit"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=3, health=2, level=1, item=None, name="Rabbit", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Rabbit(self.attack, self.health, self.level, self.item, self.name)
+        return Rabbit(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Sheep(Pet):
-    def __init__(self, attack=2, health=2, level=1, item=None, name="Sheep"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=2, health=2, level=1, item=None, name="Sheep", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Sheep(self.attack, self.health, self.level, self.item, self.name)
+        return Sheep(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def faint(self, location, party, other_party):
         spawns = [Ram(2*self.level, 2*self.level, self.level), Ram(2*self.level, 2*self.level, self.level)]
         party.spawn(spawns, location)
 
 
 class Snail(Pet):
-    def __init__(self, attack=2, health=2, level=1, item=None, name="Snail"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=2, health=2, level=1, item=None, name="Snail", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Snail(self.attack, self.health, self.level, self.item, self.name)
+        return Snail(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Turtle(Pet):
-    def __init__(self, attack=2, health=2, level=1, item=None, name="Turtle"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=2, health=2, level=1, item=None, name="Turtle", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Turtle(self.attack, self.health, self.level, self.item, self.name)
+        return Turtle(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Ram(Pet):
-    def __init__(self, attack=2, health=2, level=1, item=None, name="Ram"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=2, health=2, level=1, item=None, name="Ram", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Ram(self.attack, self.health, self.level, self.item, self.name)
+        return Ram(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
-# Tier Four Pets ##
-# Missing Hippo
+# Tier Four Pets #
 class Whale(Pet):
-    def __init__(self, attack=3, health=8, level=1, item=None, name="Whale"):
-        self.stored_pet = None
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=3, health=8, level=1, item=None, name="Whale", stored_pet=None, hurt=False):
+        self.stored_pet = stored_pet
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Whale(self.attack, self.health, self.level, self.item, self.name)
+        return Whale(self.attack, self.health, self.level, self.item, self.name, self.stored_pet, self.hurt)
     def faint(self, location, party, other_party):
         party.spawn([self.stored_pet], location)
     def start_battle(self, party, other_party):
@@ -336,44 +403,55 @@ class Whale(Pet):
 
 
 class Bison(Pet):
-    def __init__(self, attack=6, health=6, level=1, item=None, name="Bison"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=6, health=6, level=1, item=None, name="Bison", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Bison(self.attack, self.health, self.level, self.item, self.name)
+        return Bison(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Deer(Pet):
-    def __init__(self, attack=1, health=1, level=1, item=None, name="Deer"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=1, health=1, level=1, item=None, name="Deer", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Deer(self.attack, self.health, self.level, self.item, self.name)
+        return Deer(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def faint(self, location, party, other_party):
         spawns = [Bus(5*self.level, 5*self.level, self.level)]
         party.spawn(spawns, location)
 
 
 class Dolphin(Pet):
-    def __init__(self, attack=4, health=6, level=1, item=None, name="Dolphin"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=4, health=6, level=1, item=None, name="Dolphin", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Dolphin(self.attack, self.health, self.level, self.item, self.name)
+        return Dolphin(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def start_battle(self, party, other_party):
         other_party.low_health_pet().take_damage(5*self.level, other_party, party)
         return True
 
 
-class Penguin(Pet):
-    def __init__(self, attack=1, health=2, level=1, item=None, name="Penguin"):
-        super().__init__(attack, health, level, item, name)
+class Hippo(Pet):
+    def __init__(self, attack=4, health=7, level=1, item=None, name="Hippo", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Penguin(self.attack, self.health, self.level, self.item, self.name)
+        return Hippo(self.attack, self.health, self.level, self.item, self.name, self.hurt)
+    def foe_has_fainted(self, location, party, other_party):
+        if location == 0:
+            self.boost([2*self.level, 2*self.level])
+        return False
+
+
+class Penguin(Pet):
+    def __init__(self, attack=1, health=2, level=1, item=None, name="Penguin", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
+    def copy(self):
+        return Penguin(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Rooster(Pet):
-    def __init__(self, attack=5, health=3, level=1, item=None, name="Rooster"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=5, health=3, level=1, item=None, name="Rooster", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Rooster(self.attack, self.health, self.level, self.item, self.name)
+        return Rooster(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def faint(self, location, party, other_party):
         chick_attack = int((self.attack+1)/2)
         spawns = []
@@ -383,10 +461,10 @@ class Rooster(Pet):
 
 
 class Skunk(Pet):
-    def __init__(self, attack=3, health=6, level=1, item=None, name="Skunk"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=3, health=6, level=1, item=None, name="Skunk", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Skunk(self.attack, self.health, self.level, self.item, self.name)
+        return Skunk(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def start_battle(self, party, other_party):
         high_health_pet = other_party.high_health_pet()
         high_health_pet.health = int((high_health_pet.health*(3-self.level)/3)+1)
@@ -394,54 +472,53 @@ class Skunk(Pet):
 
 
 class Squirrel(Pet):
-    def __init__(self, attack=2, health=2, level=1, item=None, name="Squirrel"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=2, health=2, level=1, item=None, name="Squirrel", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Squirrel(self.attack, self.health, self.level, self.item, self.name)
+        return Squirrel(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Worm(Pet):
-    def __init__(self, attack=2, health=2, level=1, item=None, name="Worm"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=2, health=2, level=1, item=None, name="Worm", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Worm(self.attack, self.health, self.level, self.item, self.name)
+        return Worm(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Bus(Pet):
-    def __init__(self, attack=5, health=5, level=1, item=None, name="Bus"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=5, health=5, level=1, item=None, name="Bus", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Bus(self.attack, self.health, self.level, self.item, self.name)
+        return Bus(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Chick(Pet):
-    def __init__(self, attack=3, health=1, level=1, item=None, name="Chick"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=3, health=1, level=1, item=None, name="Chick", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Chick(self.attack, self.health, self.level, self.item, self.name)
+        return Chick(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
-# Tier Five Pets ##
-# Missing Rhino
+# Tier Five Pets #
 class Monkey(Pet):
-    def __init__(self, attack=1, health=2, level=1, item=None, name="Monkey"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=1, health=2, level=1, item=None, name="Monkey", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Monkey(self.attack, self.health, self.level, self.item, self.name)
+        return Monkey(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Cow(Pet):
-    def __init__(self, attack=4, health=6, level=1, item=None, name="Cow"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=4, health=6, level=1, item=None, name="Cow", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Cow(self.attack, self.health, self.level, self.item, self.name)
+        return Cow(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Crocodile(Pet):
-    def __init__(self, attack=8, health=4, level=1, item=None, name="Crocodile"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=8, health=4, level=1, item=None, name="Crocodile", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Crocodile(self.attack, self.health, self.level, self.item, self.name)
+        return Crocodile(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def start_battle(self, party, other_party):
         damage = arrZeros(other_party.len())
         damage[-1] = 8*self.level
@@ -449,69 +526,104 @@ class Crocodile(Pet):
         return True
 
 
-class Scorpion(Pet):
-    def __init__(self, attack=1, health=1, level=1, item=None, name="Scorpion"):
-        super().__init__(attack, health, level, item, name)
+class Rhino(Pet):
+    def __init__(self, attack=4, health=7, level=1, item=None, name="Rhino", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Scorpion(self.attack, self.health, self.level, self.item, self.name)
+        return Rhino(self.attack, self.health, self.level, self.item, self.name, self.hurt)
+    def foe_has_fainted(self, location, party, other_party):
+        if location == 0:
+            if other_party.len() > 0:
+                other_party.partyPets[0].take_damage(5*self.level, other_party, party)
+        return True
+
+
+class Scorpion(Pet):
+    def __init__(self, attack=1, health=1, level=1, item=None, name="Scorpion", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
+    def copy(self):
+        return Scorpion(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Seal(Pet):
-    def __init__(self, attack=3, health=8, level=1, item=None, name="Seal"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=3, health=8, level=1, item=None, name="Seal", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Seal(self.attack, self.health, self.level, self.item, self.name)
+        return Seal(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Shark(Pet):
-    def __init__(self, attack=4, health=4, level=1, item=None, name="Shark"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=4, health=4, level=1, item=None, name="Shark", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Shark(self.attack, self.health, self.level, self.item, self.name)
+        return Shark(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def friend_has_fainted(self, number, prev_party, n_party):
         self.boost([2*self.level*number, self.level*number])
 
 
 class Turkey(Pet):
-    def __init__(self, attack=3, health=4, level=1, item=None, name="Turkey"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=3, health=4, level=1, item=None, name="Turkey", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Turkey(self.attack, self.health, self.level, self.item, self.name)
+        return Turkey(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def new_pet_spawning(self, new_pet):
         new_pet.boost([3*self.level, 3*self.level])
 
 
-# Tier Six Pets ##
-# Missing Fly, Gorilla, Tiger
+# Tier Six Pets #
 class Cat(Pet):
-    def __init__(self, attack=4, health=5, level=1, item=None, name="Cat"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=4, health=5, level=1, item=None, name="Cat", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Cat(self.attack, self.health, self.level, self.item, self.name)
+        return Cat(self.attack, self.health, self.level, self.item, self.name, self.hurt)
 
 
 class Boar(Pet):
-    def __init__(self, attack=8, health=6, level=1, item=None, name="Boar"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=8, health=6, level=1, item=None, name="Boar", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Boar(self.attack, self.health, self.level, self.item, self.name)
-    def before_attack(self, party, otherParty):
+        return Boar(self.attack, self.health, self.level, self.item, self.name, self.hurt)
+    def before_attack(self, party, other_party):
         self.boost([2*self.level, 2*self.level])
         return False
 
 
 class Dragon(Pet):
-    def __init__(self, attack=6, health=8, level=1, item=None, name="Dragon"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=6, health=8, level=1, item=None, name="Dragon", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Dragon(self.attack, self.health, self.level, self.item, self.name)
+        return Dragon(self.attack, self.health, self.level, self.item, self.name, self.hurt)
+
+
+class Fly(Pet):
+    def __init__(self, attack=5, health=5, level=1, item=None, name="Fly", hurt=False):
+        self.abilityUses = 3
+        super().__init__(attack, health, level, item, name, hurt)
+    def copy(self):
+        return Fly(self.attack, self.health, self.level, self.item, self.name, self.hurt)
+    def friend_has_fainted(self, number, prev_party, n_party):
+        if self.abilityUses > 0:
+            if n_party.spawn(ZFly(5*self.level, 5*self.level, self.level)):
+                self.abilityUses -= 1
+
+
+class Gorilla(Pet):
+    def __init__(self, attack=6, health=9, level=1, item=None, name="Gorilla", hurt=False):
+        self.abilityUses = self.level
+        super().__init__(attack, health, level, item, name, hurt)
+    def copy(self):
+        return Gorilla(self.attack, self.health, self.level, self.item, self.name, self.hurt)
+    def was_hurt(self, party, other_party):
+        if self.abilityUses > 0:
+            self.abilityUses -= 1
+        return super().was_hurt(party, other_party)
 
 
 class Leopard(Pet):
-    def __init__(self, attack=10, health=4, level=1, item=None, name="Leopard"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=10, health=4, level=1, item=None, name="Leopard", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Leopard(self.attack, self.health, self.level, self.item, self.name)
+        return Leopard(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def start_battle(self, party, other_party):
         damage = arrZeros(other_party.len())
         selections = random.sample(range(0, other_party.len()), min(self.level, other_party.len()))
@@ -522,20 +634,20 @@ class Leopard(Pet):
 
 
 class Mammoth(Pet):
-    def __init__(self, attack=3, health=10, level=1, item=None, name="Mammoth"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=3, health=10, level=1, item=None, name="Mammoth", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Mammoth(self.attack, self.health, self.level, self.item, self.name)
+        return Mammoth(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def faint(self, location, party, other_party):
         for pet in party.partyPets:
             pet.boost([2*self.level, 2*self.level])
 
 
 class Snake(Pet):
-    def __init__(self, attack=6, health=6, level=1, item=None, name="Snake"):
-        super().__init__(attack, health, level, item, name)
+    def __init__(self, attack=6, health=6, level=1, item=None, name="Snake", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return Snake(self.attack, self.health, self.level, self.item, self.name)
+        return Snake(self.attack, self.health, self.level, self.item, self.name, self.hurt)
     def after_attack(self, location, party, other_party):
         if location == 1:
             other_party.partyPets[random.randint(0, other_party.len() - 1)].take_damage(5*self.level, party, other_party)
@@ -543,8 +655,15 @@ class Snake(Pet):
         return False
 
 
-class ZFly(Pet):
-    def __init__(self, attack=5, health=5, level=1, item=None, name="ZFly"):
-        super().__init__(attack, health, level, item, name)
+class Tiger(Pet):
+    def __init__(self, attack=4, health=3, level=1, item=None, name="Tiger", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
     def copy(self):
-        return ZFly(self.attack, self.health, self.level, self.item, self.name)
+        return Tiger(self.attack, self.health, self.level, self.item, self.name, self.hurt)
+
+
+class ZFly(Pet):
+    def __init__(self, attack=5, health=5, level=1, item=None, name="ZFly", hurt=False):
+        super().__init__(attack, health, level, item, name, hurt)
+    def copy(self):
+        return ZFly(self.attack, self.health, self.level, self.item, self.name, self.hurt)

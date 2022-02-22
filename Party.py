@@ -1,6 +1,8 @@
 from SolveSuperMarioPets.OtherFunctions import *
+from SolveSuperMarioPets.Pets import *
 
-class Party():
+
+class Party:
     def copy(self):
         newPartyPets = []
         for pet in self.partyPets:
@@ -22,6 +24,8 @@ class Party():
     def len(self):
         return len(self.partyPets)
     def position(self, pet):
+        if pet not in self.partyPets:
+            return -1
         return self.partyPets.index(pet)
     def low_health_pet(self):
         low_health_pet = self.partyPets[0]
@@ -45,7 +49,13 @@ class Party():
 
     def start_battle(self, other_party):
         shots_fired = False
-        for pet in self.partyPets:
+        tiger_flag = 0
+        for pet in reversed(self.partyPets):
+            if isinstance(pet, Tiger):
+                tiger_flag = pet.level
+            elif tiger_flag > 0:
+                shots_fired = pet.start_battle(self, other_party) or shots_fired
+                tiger_flag = 0
             shots_fired = pet.start_battle(self, other_party) or shots_fired
         return shots_fired
 
@@ -56,20 +66,27 @@ class Party():
         for pet in self.partyPets:
             if pet.health <= 0:
                 fainted_pets.append([pet, self.position(pet)-len(fainted_pets)])
+            else:
+                shots_fired = pet.was_hurt(self, other_party) or shots_fired
         for pet in fainted_pets:
             self.partyPets.remove(pet[0])
         for pet in fainted_pets:
             shots_fired = pet[0].faint(pet[1], self, other_party) or shots_fired
+        for pet in fainted_pets:
+            shots_fired = other_party.partyPets[0].foe_has_fainted(pet[1], other_party, self) or shots_fired
         for pet in self.partyPets:
             pet.friend_has_fainted(len(fainted_pets), old_party, self)
         return shots_fired
 
     def spawn(self, pets, location=0):
+        success = False
         for new_pet in pets:
             if self.len() < 5:
                 for pet in self.partyPets:
                     pet.new_pet_spawning(new_pet)
                 self.partyPets.insert(location, new_pet)
+                success = True
+        return success
 
     def take_damage(self, damage_array, other_party):
         for i in range(0, len(self.partyPets)):
