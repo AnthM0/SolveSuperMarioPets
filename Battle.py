@@ -1,38 +1,74 @@
 class Battle:
-    def __init__(self,myParty,otherParty):
+    def __init__(self, myParty, otherParty):
         self.myParty = myParty
         self.otherParty = otherParty
 
-    def printBattle(self):
-        lenMyParty = len(self.myParty.partyPets)
-        for i in range(lenMyParty,5):
-            print(" ", end="")
+    def print_battle(self):
         self.myParty.printB()
-        print("    ", end="")
+        print(" vs.   ", end="")
         self.otherParty.printF()
         print()
 
-    def startBattle(self,printing=False):
-        myDamage = self.myParty.startBattleDamage(self.otherParty.len(), self.otherParty.lowHealthIndex())
-        otherDamage = self.otherParty.startBattleDamage(self.myParty.len(), self.myParty.lowHealthIndex())
-        if(printing):
-            print("Start Battle:", otherDamage, "   ", myDamage)
-        self.myParty.takeDamage(otherDamage)
-        self.otherParty.takeDamage(myDamage)
-
-    def singleAttack(self,printing=False):
-        myDamage = self.myParty.getTurnDamage(self.otherParty.len())
-        otherDamage = self.otherParty.getTurnDamage(self.myParty.len())
-        if (printing):
-            print("Attack: ", otherDamage, "   ", myDamage)
-        self.myParty.takeDamage(otherDamage)
-        self.otherParty.takeDamage(myDamage)
-
-    def checkOutcome(self):
-        if(self.myParty.isAlive() and self.otherParty.isAlive()):
+    def outcome(self):
+        if self.myParty.is_alive() and self.otherParty.is_alive():
             return 69
-        elif(self.myParty.isAlive()):
+        elif self.myParty.is_alive():
             return 1
-        elif(self.otherParty.isAlive()):
+        elif self.otherParty.is_alive():
             return -1
         return 0
+
+    def start_battle(self, printing=False):
+        if printing:
+            self.print_battle()
+        shots_fired = False
+        shots_fired = self.myParty.start_battle(self.otherParty)
+        shots_fired = self.otherParty.start_battle(self.myParty) or shots_fired
+        while shots_fired:
+            shots_fired = self.myParty.faint_scan(self.otherParty)
+            shots_fired = self.otherParty.faint_scan(self.myParty) or shots_fired
+        if printing:
+            self.print_battle()
+        return self.outcome()
+
+    def turn(self, printing=False):
+        self.before_attack(printing)
+
+    def before_attack(self, printing=False):
+        if printing:
+            self.print_battle()
+        shots_fired = False
+        shots_fired = self.myParty.before_attack(self.otherParty)
+        shots_fired = self.otherParty.before_attack(self.myParty) or shots_fired
+        while shots_fired:
+            shots_fired = self.myParty.faint_scan(self.otherParty)
+            shots_fired = self.otherParty.faint_scan(self.myParty) or shots_fired
+        if printing:
+            self.print_battle()
+        return self.outcome()
+
+    def make_attack(self, printing=False):
+        if printing:
+            self.print_battle()
+        shots_fired = True
+        self.myParty.make_attack(self.otherParty)
+        self.otherParty.make_attack(self.myParty)
+        while shots_fired:
+            shots_fired = self.myParty.faint_scan(self.otherParty)
+            shots_fired = self.otherParty.faint_scan(self.myParty) or shots_fired
+        if printing:
+            self.print_battle()
+        return self.outcome()
+
+    def after_attack(self, printing=False):
+        if printing:
+            self.print_battle()
+        shots_fired = False
+        shots_fired = self.myParty.after_attack(self.otherParty)
+        shots_fired = self.otherParty.after_attack(self.myParty) or shots_fired
+        while shots_fired:
+            shots_fired = self.myParty.faint_scan(self.otherParty)
+            shots_fired = self.otherParty.faint_scan(self.myParty) or shots_fired
+        if printing:
+            self.print_battle()
+        return self.outcome()
