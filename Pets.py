@@ -15,6 +15,10 @@ class Pet:
             return Pet()
         new_item = self.item.copy()
         return Pet(self.attack, self.health, self.level, new_item, self.name, self.hurt)
+    def hash_string(self):
+        ret_str = self.name + "[" + str(self.attack) + "," + str(self.health) + "," + str(self.level) + "]"
+        ret_str = ret_str + self.item.hash_string()
+        return ret_str
     def print(self):
         print(self.name, "(", self.attack, ",", self.health, ")   ", sep="", end="")
 
@@ -57,7 +61,8 @@ class Ant(Pet):
         new_item = self.item.copy()
         return Ant(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def faint(self, location, party, other_party):
-        party.partyPets[random.randint(0, party.len()-1)].boost([2*self.level, self.level])
+        if party.len() > 0:
+            party.partyPets[random.randint(0, party.len()-1)].boost([2*self.level, self.level])
         super().faint(location, party, other_party)
         return False
 
@@ -124,7 +129,7 @@ class Mosquito(Pet):
         super().__init__(attack, health, level, item, name, hurt)
     def copy(self, base=False):
         if base:
-            return Pet()
+            return Mosquito()
         new_item = self.item.copy()
         return Mosquito(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def start_battle(self, party, other_party):
@@ -418,7 +423,7 @@ class Giraffe(Pet):
 
 
 class Kangaroo(Pet):
-    def __init__(self, attack=2, health=5, level=1, item=Item(), name="Kangaroo", hurt=False):
+    def __init__(self, attack=1, health=2, level=1, item=Item(), name="Kangaroo", hurt=False):
         super().__init__(attack, health, level, item, name, hurt)
     def copy(self, base=False):
         if base:

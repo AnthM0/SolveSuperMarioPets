@@ -13,6 +13,11 @@ class Item:
         if damage < 0:
             return 0
         return damage
+    def hash_string(self):
+        if self.used:
+            return "<>"
+        else:
+            return "<" + self.name + ">"
     def blocks_damage(self, damage):
         return False
     def faint(self, copy, location, party):

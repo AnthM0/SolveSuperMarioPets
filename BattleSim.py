@@ -1,3 +1,4 @@
+import pickle
 from SolveSuperMarioPets.Pets import *
 from SolveSuperMarioPets.Party import *
 from SolveSuperMarioPets.Battle import *
@@ -9,21 +10,63 @@ class Simulator:
         self.otherParty = otherPets
 
     @staticmethod
-    def single_battle(self, myParty, otherParty, printing=True):
+    def lookup(match_up, myParty, otherParty):
+        myParty_str = myParty.hash_string()
+        otherParty_str = otherParty.hash_string()
+        if myParty_str in match_up.keys():
+            if otherParty_str in match_up[myParty_str].keys():
+                return match_up[myParty_str][otherParty_str]
+        if otherParty_str in match_up.keys():
+            if myParty_str in match_up[otherParty_str].keys():
+                return match_up[otherParty_str][myParty_str]
+        return []
+
+    @staticmethod
+    def load(match_up, myParty, otherParty, results):
+        inverted_results = [results[2], results[1], results[0]]
+        myParty_str = myParty.hash_string()
+        otherParty_str = otherParty.hash_string()
+        if myParty_str not in match_up.keys():
+            match_up[myParty_str] = {}
+        if otherParty_str not in match_up[myParty_str].keys():
+            match_up[myParty_str][otherParty_str] = []
+        if otherParty_str not in match_up.keys():
+            match_up[otherParty_str] = {}
+        if myParty_str not in match_up[otherParty_str].keys():
+            match_up[otherParty_str][myParty_str] = []
+        match_up[myParty_str][otherParty_str] = results
+        match_up[otherParty_str][myParty_str] = inverted_results
+
+    @staticmethod
+    def single_battle(myParty, otherParty, printing=True):
         thisBattle = Battle(myParty, otherParty)
         if printing:
             thisBattle.print_battle()
-            print("       ...Pre Battle...")
-        thisBattle.start_battle(printing)
+        thisBattle.start_battle()
         if printing:
-            thisBattle.printBattle()
-            print("       ...Start Battle...")
-        outcome = thisBattle.checkOutcome()
+            print("       ...Pre Battle...")
+            thisBattle.print_battle()
+        outcome = thisBattle.outcome()
         while outcome == 69:
-            thisBattle.singleAttack()
             if printing:
-                thisBattle.printBattle()
-            outcome = thisBattle.checkOutcome()
+                print("       ...Before Attack...")
+                thisBattle.print_battle()
+            thisBattle.before_attack()
+            outcome = thisBattle.outcome()
+            if outcome == 69:
+                thisBattle.make_attack()
+                outcome = thisBattle.outcome()
+                if printing:
+                    print("       ... Attack...")
+                    thisBattle.print_battle()
+                if outcome == 69:
+                    thisBattle.after_attack()
+                    outcome = thisBattle.outcome()
+                    if printing:
+                        print("       ...After Attack...")
+                        thisBattle.print_battle()
+            if printing:
+                print()
         if printing:
             if outcome == 1:
                 print("You Win!")
@@ -33,14 +76,21 @@ class Simulator:
                 print("You Tied.")
         return outcome
 
-    def multi_battle(self, tests):
+    @staticmethod
+    def multi_battle(myParty, otherParty, tests, match_up=None, override=False, printing=True):
+        if match_up is not None:
+            outcome_array = Simulator.lookup(match_up, myParty, otherParty)
+            if (len(outcome_array) > 0) and (not override):
+                if printing:
+                    print("Win(", outcome_array[0], "%), Tie(", outcome_array[1], "%), Loss(", outcome_array[2], "%)")
+                return outcome_array
         wins = 0
         ties = 0
         losses = 0
         for i in range(0, tests):
-            myPetsParty = Party(self.myParty.copy())
-            otherPetsParty = Party(self.otherParty.copy())
-            outcome = self.runSingleBattle(myPetsParty, otherPetsParty, False)
+            myPetsParty = Party(myParty.copy())
+            otherPetsParty = Party(otherParty.copy())
+            outcome = Simulator.single_battle(myPetsParty, otherPetsParty, False)
             if outcome == 1:
                 wins += 1
             elif outcome == -1:
@@ -50,20 +100,19 @@ class Simulator:
         win_p = wins*100 / tests
         tie_p = ties*100 / tests
         loss_p = losses*100 / tests
-        print("Win(", win_p, "%), Tie(", tie_p, "%), Loss(", loss_p, "%)")
+        if printing:
+            print("Win(", win_p, "%), Tie(", tie_p, "%), Loss(", loss_p, "%)")
+        if match_up is not None:
+            Simulator.load(match_up, myParty, otherParty, [win_p, tie_p, loss_p])
+        return [win_p, tie_p, loss_p]
 
 
-myPets = [Sheep(item=Mushroom())]
-otherPets = [Mammoth()]
-myParty = Party(myPets)
-otherParty = Party(otherPets)
+# with open('match_up_dict.pkl', 'rb') as f:
+#     match_up = pickle.load(f)
 
-myBattle = Battle(myParty, otherParty)
-myBattle.start_battle(True)
-myBattle.before_attack(True)
-myBattle.make_attack(True)
-myBattle.after_attack(True)
+# Simulator.single_battle(myParty, otherParty, True)
+# Simulator.multi_battle(myParty, otherParty, 100000)
 
-# battleSim = Simulator(myParty, otherParty)
-# battleSim.single_battle(myParty, otherParty, True)
-# battleSim.runMultiBattle(10000)
+# print(match_up)
+# with open('match_up_dict.pkl', 'wb') as f:
+#     pickle.dump(match_up, f)

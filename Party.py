@@ -14,6 +14,12 @@ class Party:
         self.partyPets = []
         for pet in myPets:
             self.partyPets.append(pet)
+    def hash_string(self):
+        ret_str = ""
+        for pet in self.partyPets:
+            ret_str = ret_str + "(" + pet.hash_string() + ")"
+        return ret_str
+
 
     def is_alive(self):
         if self.len() > 0:
@@ -72,7 +78,8 @@ class Party:
         for pet in fainted_pets:
             shots_fired = pet[0].faint(pet[1], self, other_party) or shots_fired
         for pet in fainted_pets:
-            shots_fired = other_party.partyPets[0].foe_has_fainted(pet[1], other_party, self) or shots_fired
+            if other_party.len() > 0:
+                shots_fired = other_party.partyPets[0].foe_has_fainted(pet[1], other_party, self) or shots_fired
         for pet in self.partyPets:
             pet.friend_has_fainted(len(fainted_pets), old_party, self)
         return shots_fired
