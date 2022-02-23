@@ -48,10 +48,10 @@ class Simulator:
             thisBattle.print_battle()
         outcome = thisBattle.outcome()
         while outcome == 69:
+            thisBattle.before_attack()
             if printing:
                 print("       ...Before Attack...")
                 thisBattle.print_battle()
-            thisBattle.before_attack()
             outcome = thisBattle.outcome()
             if outcome == 69:
                 thisBattle.make_attack()

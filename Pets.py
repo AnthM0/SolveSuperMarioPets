@@ -10,6 +10,8 @@ class Pet:
         self.level = level
         self.item = item
         self.hurt = hurt
+        self.friend_in_front_attacked = False
+        self.attacked = False
     def copy(self, base=False):
         if base:
             return Pet()
@@ -24,10 +26,16 @@ class Pet:
 
     def boost(self, additions):
         self.attack += additions[0]
+        if self.attack > 50:
+            self.attack = 50
         self.health += additions[1]
+        if self.health > 50:
+            self.health = 50
     def take_damage(self, damage, party, other_party):
-        self.health -= damage
-        self.hurt = True
+        mod_damage = self.item.take_damage(damage)
+        self.health -= mod_damage
+        if mod_damage > 0:
+            self.hurt = True
     def was_hurt(self, party, other_party):
         self.hurt = False
         return False
@@ -38,17 +46,21 @@ class Pet:
         return False
     def make_attack(self, my_party, other_party):
         self.item.attack(self.attack, my_party, other_party)
-    def after_attack(self, location, party, other_party):
+        self.attacked = True
+    def after_attack(self, party, other_party):
+        self.friend_in_front_attacked = False
         return False
     def faint(self, location, party, other_party):
-        newPets = self.item.faint(self.copy(1), location, party)
+        newPets = self.item.faint(self.copy(1), Bee(), location, party)
         return False
     def friend_has_fainted(self, number, prev_party, n_party):
         return False
     def foe_has_fainted(self, old_foe_party, new_foe_party, party):
         return False
-    def new_pet_spawning(self, new_pet):
+    def new_pet_spawning(self, new_pet, party):
         return False
+    def tiger_lv(self):
+        return 0
 
 
 # Tier One Pets #
@@ -63,6 +75,9 @@ class Ant(Pet):
     def faint(self, location, party, other_party):
         if party.len() > 0:
             party.partyPets[random.randint(0, party.len()-1)].boost([2*self.level, self.level])
+            tigerLv = party.tiger_lv(location)
+            if tigerLv > 0:
+                party.partyPets[random.randint(0, party.len() - 1)].boost([2*tigerLv, tigerLv])
         super().faint(location, party, other_party)
         return False
 
@@ -87,6 +102,9 @@ class Cricket(Pet):
         return Cricket(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def faint(self, location, party, other_party):
         spawns = [ZCricket(self.level, self.level, self.level)]
+        tigerLv = party.tiger_lv(location)
+        if tigerLv > 0:
+            spawns.append(ZCricket(tigerLv, tigerLv, tigerLv))
         party.spawn(spawns, location)
         super().faint(location, party, other_party)
         return False
@@ -120,8 +138,10 @@ class Horse(Pet):
             return Horse()
         new_item = self.item.copy()
         return Horse(self.attack, self.health, self.level, new_item, self.name, self.hurt)
-    def new_pet_spawning(self, new_pet):
+    def new_pet_spawning(self, new_pet, party):
         new_pet.boost([self.level, 0])
+        tigerLv = party.tiger_lv(party.position(self) + 1)
+        new_pet.boost([tigerLv, 0])
 
 
 class Mosquito(Pet):
@@ -139,6 +159,14 @@ class Mosquito(Pet):
             for i in selections:
                 other_party.partyPets[i].take_damage(1, other_party, party)
                 attacks -= 1
+        tigerLv = party.tiger_lv(party.position(self) + 1)
+        if tigerLv > 0:
+            attacks = tigerLv
+            while attacks > 0:
+                selections = random.sample(range(0, other_party.len()), min(attacks, other_party.len()))
+                for i in selections:
+                    other_party.partyPets[i].take_damage(1, other_party, party)
+                    attacks -= 1
         return True
 
 
@@ -202,6 +230,10 @@ class Dodo(Pet):
         new_item = self.item.copy()
         return Dodo(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def start_battle(self, party, other_party):
+        tigerLv = party.tiger_lv(party.position(self) + 1)
+        if tigerLv > 0:
+            if party.position(self) != 0:
+                party.partyPets[party.position(self) - 1].boost([int((self.attack + 1) / 2 * tigerLv), 0])
         if party.position(self) != 0:
             party.partyPets[party.position(self) - 1].boost([int((self.attack+1)/2*self.level), 0])
         return False
@@ -216,12 +248,21 @@ class Elephant(Pet):
         new_item = self.item.copy()
         return Elephant(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def before_attack(self, party, other_party):
+        tigerLv = party.tiger_lv(party.position(self) + 1)
         if party.position(self) == 0 and party.len() > 1:
             party.partyPets[1].take_damage(1, party, other_party)
-            if party.len() > 2 and self.level > 1:
-                party.partyPets[2].take_damage(1, party, other_party)
-                if party.len() > 3 and self.level > 2:
-                    party.partyPets[3].take_damage(1, party, other_party)
+            if tigerLv > 0:
+                party.partyPets[1].take_damage(1, party, other_party)
+            if party.len() > 2:
+                if self.level > 1:
+                    party.partyPets[2].take_damage(1, party, other_party)
+                if tigerLv > 1:
+                    party.partyPets[2].take_damage(1, party, other_party)
+                if party.len() > 3:
+                    if self.level > 2:
+                        party.partyPets[3].take_damage(1, party, other_party)
+                    if tigerLv > 2:
+                        party.partyPets[3].take_damage(1, party, other_party)
             return True
         return False
 
@@ -235,10 +276,13 @@ class Flamingo(Pet):
         new_item = self.item.copy()
         return Flamingo(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def faint(self, location, party, other_party):
+        tigerLv = party.tiger_lv(location)
         if location < party.len():
             party.partyPets[location].boost([self.level, self.level])
+            party.partyPets[location].boost([tigerLv, tigerLv])
         if (location+1) < party.len():
             party.partyPets[location+1].boost([self.level, self.level])
+            party.partyPets[location+1].boost([tigerLv, tigerLv])
         super().faint(location, party, other_party)
         return False
 
@@ -252,10 +296,15 @@ class Hedgehog(Pet):
         new_item = self.item.copy()
         return Hedgehog(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def faint(self, location, party, other_party):
+        tigerLv = party.tiger_lv(location)
         for pet in party:
-            pet.take_damage(2, party, other_party)
+            pet.take_damage(2*self.level, party, other_party)
+            if tigerLv > 0:
+                pet.take_damage(2*tigerLv, party, other_party)
         for pet in other_party:
-            pet.take_damage(2, other_party, party)
+            pet.take_damage(2*self.level, other_party, party)
+            if tigerLv > 0:
+                pet.take_damage(2*tigerLv, party, other_party)
         super().faint(location, party, other_party)
         return True
 
@@ -270,8 +319,12 @@ class Peacock(Pet):
         new_item = self.item.copy()
         return Peacock(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def was_hurt(self, party, other_party):
-        if self.abilityUses > 0:
-            self.attack += int((self.attack+1)/2)
+        tigerLv = party.tiger_lv(party.position(self) + 1)
+        if self.abilityUses > 0 and tigerLv > 0:
+            self.boost([int((self.attack+1)/2)*2, 0])
+            self.abilityUses -= 1
+        elif self.abilityUses > 0:
+            self.boost([int((self.attack+1)/2), 0])
             self.abilityUses -= 1
         return super().was_hurt(party, other_party)
 
@@ -288,6 +341,9 @@ class Rat(Pet):
         spawns = []
         for i in range(0, self.level):
             spawns.append(DirtyRat(1, 1, self.level))
+        tigerLv = party.tiger_lv(location)
+        for i in range(0, tigerLv):
+            spawns.append(DirtyRat(1, 1, tigerLv))
         other_party.spawn(spawns, 0)
         super().faint(location, party, other_party)
         return False
@@ -324,6 +380,10 @@ class Spider(Pet):
                 Snail(2, 2, self.level),
                 Turtle(2, 2, self.level)]
         spawns = [pets[random.randint(0, len(pets))]]
+        tigerLv = party.tiger_lv(location)
+        if tigerLv > 0:
+            spawns.append(pets[random.randint(0, len(pets))])
+            spawns[1].level = tigerLv
         party.spawn(spawns, location)
         super().faint(location, party, other_party)
 
@@ -357,11 +417,16 @@ class Dog(Pet):
             return Dog()
         new_item = self.item.copy()
         return Dog(self.attack, self.health, self.level, new_item, self.name, self.hurt)
-    def new_pet_spawning(self, new_pet):
+    def new_pet_spawning(self, new_pet, party):
         if random.randint(0, 1) == 0:
             self.attack += self.level
         else:
             self.health += self.level
+        tigerLv = party.tiger_lv(party.position(self) + 1)
+        if random.randint(0, 1) == 0:
+            self.attack += tigerLv
+        else:
+            self.health += tigerLv
 
 
 class Badger(Pet):
@@ -374,10 +439,19 @@ class Badger(Pet):
         return Badger(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def faint(self, location, party, other_party):
         damage = self.attack*self.level
+        tigerLv = party.tiger_lv(location)
         if location == 0:
             other_party.partyPets[0].take_damage(damage, other_party, party)
+            if tigerLv > 0:
+                other_party.partyPets[0].take_damage(self.attack*tigerLv, other_party, party)
+        if location != 0:
+            party.partyPets[location-1].take_damage(damage, party, other_party)
+            if tigerLv > 0:
+                party.partyPets[location-1].take_damage(self.attack*tigerLv, other_party, party)
         if location < party.len():
             party.partyPets[location].take_damage(damage, party, other_party)
+            if tigerLv > 0:
+                party.partyPets[location].take_damage(self.attack*tigerLv, other_party, party)
         super().faint(location, party, other_party)
         return True
 
@@ -391,8 +465,11 @@ class Blowfish(Pet):
         new_item = self.item.copy()
         return Blowfish(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def was_hurt(self, party, other_party):
+        tigerLv = party.tiger_lv(party.position(self) + 1)
         if self.hurt:
             other_party.partyPets[random.randint(0, other_party.len()-1)].take_damage(2*self.level, other_party, party)
+            if tigerLv > 0:
+                other_party.partyPets[random.randint(0, other_party.len()-1)].take_damage(2*tigerLv, other_party, party)
             self.hurt = False
             return True
         return super().was_hurt(party, other_party)
@@ -407,8 +484,9 @@ class Camel(Pet):
         new_item = self.item.copy()
         return Camel(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def was_hurt(self, party, other_party):
+        tigerLv = party.tiger_lv(party.position(self) + 1)
         if party.len() > (party.position(self)+1):
-            party.partyPets[(party.position(self)+1)].boost([self.level, 2*self.level])
+            party.partyPets[(party.position(self)+1)].boost([(self.level + tigerLv), 2*(self.level + tigerLv)])
         return super().was_hurt(party, other_party)
 
 
@@ -430,10 +508,11 @@ class Kangaroo(Pet):
             return Kangaroo()
         new_item = self.item.copy()
         return Kangaroo(self.attack, self.health, self.level, new_item, self.name, self.hurt)
-    def after_attack(self, location, party, other_party):
-        if location == 1:
-            self.boost([2*self.level, 2*self.level])
-        return False
+    def after_attack(self, party, other_party):
+        if self.friend_in_front_attacked:
+            tigerLv = party.tiger_lv(party.position(self) + 1)
+            self.boost([2*(self.level + tigerLv), 2*(self.level + tigerLv)])
+        super().after_attack(party, other_party)
 
 
 class Ox(Pet):
@@ -476,6 +555,10 @@ class Sheep(Pet):
         return Sheep(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def faint(self, location, party, other_party):
         spawns = [Ram(2*self.level, 2*self.level, self.level), Ram(2*self.level, 2*self.level, self.level)]
+        tigerLv = party.tiger_lv(location)
+        if tigerLv > 0:
+            spawns.append(Ram(2 * tigerLv, 2 * tigerLv, tigerLv))
+            spawns.append(Ram(2 * tigerLv, 2 * tigerLv, tigerLv))
         party.spawn(spawns, location)
         super().faint(location, party, other_party)
         return False
@@ -531,13 +614,23 @@ class Whale(Pet):
         new_item = self.item.copy()
         return Whale(self.attack, self.health, self.level, self.item, self.name, self.stored_pet, self.hurt)
     def faint(self, location, party, other_party):
-        party.spawn([self.stored_pet], location)
+        spawns = [self.stored_pet]
+        tigerLv = party.tiger_lv(location)
+        if tigerLv > 0:
+            new_pet = spawns[0].copy()
+            new_pet.health = tigerLv
+            new_pet.attack = tigerLv
+            new_pet.level = tigerLv
+            spawns.append(new_pet)
+        party.spawn(spawns, location)
         super().faint(location, party, other_party)
         return False
     def start_battle(self, party, other_party):
         if party.position(self) != 0:
             target_pet = party.partyPets[party.position(self)-1]
             self.stored_pet = target_pet.copy(True)
+            self.stored_pet.health = self.level
+            self.stored_pet.attack = self.level
             self.stored_pet.level = self.level
             target_pet.health = 0
         return True
@@ -563,6 +656,9 @@ class Deer(Pet):
         return Deer(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def faint(self, location, party, other_party):
         spawns = [Bus(5*self.level, 5*self.level, self.level)]
+        tigerLv = party.tiger_lv(location)
+        if tigerLv > 0:
+            spawns.append(Bus(5 * tigerLv, 5 * tigerLv, tigerLv))
         party.spawn(spawns, location)
         super().faint(location, party, other_party)
         return False
@@ -577,7 +673,10 @@ class Dolphin(Pet):
         new_item = self.item.copy()
         return Dolphin(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def start_battle(self, party, other_party):
+        tigerLv = party.tiger_lv(party.position(self) + 1)
         other_party.low_health_pet().take_damage(5*self.level, other_party, party)
+        if tigerLv > 0:
+            other_party.low_health_pet().take_damage(5 * tigerLv, other_party, party)
         return True
 
 
@@ -589,8 +688,11 @@ class Hippo(Pet):
             return Hippo()
         new_item = self.item.copy()
         return Hippo(self.attack, self.health, self.level, new_item, self.name, self.hurt)
+    def after_attack(self, party, other_party):
+        self.attacked = False
+        return super().after_attack(party, other_party)
     def foe_has_fainted(self, location, party, other_party):
-        if location == 0:
+        if location == 0 and self.attacked:
             self.boost([2*self.level, 2*self.level])
         return False
 
@@ -618,6 +720,9 @@ class Rooster(Pet):
         spawns = []
         for i in range(0, self.level):
             spawns.append(Chick(chick_attack, 1, self.level))
+        tigerLv = party.tiger_lv(location)
+        for i in range(0, tigerLv):
+            spawns.append(Chick(chick_attack, 1, tigerLv))
         party.spawn(spawns, location)
         super().faint(location, party, other_party)
         return False
@@ -633,7 +738,11 @@ class Skunk(Pet):
         return Skunk(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def start_battle(self, party, other_party):
         high_health_pet = other_party.high_health_pet()
-        high_health_pet.health = int((high_health_pet.health*(3-self.level)/3)+1)
+        high_health_pet.health = max(int((high_health_pet.health*(3 - self.level) / 3)), 1)
+        tigerLv = party.tiger_lv(party.position(self) + 1)
+        if tigerLv > 0:
+            high_health_pet = other_party.high_health_pet()
+            high_health_pet.health = max(int((high_health_pet.health*(3 - tigerLv) / 3)), 1)
         return False
 
 
@@ -708,6 +817,9 @@ class Crocodile(Pet):
         return Crocodile(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def start_battle(self, party, other_party):
         other_party.partyPets[-1].take_damage(8*self.level, other_party, party)
+        tigerLv = party.tiger_lv(party.position(self) + 1)
+        if tigerLv > 0:
+            other_party.partyPets[-1].take_damage(8 * tigerLv, other_party, party)
         return True
 
 
@@ -719,8 +831,11 @@ class Rhino(Pet):
             return Rhino()
         new_item = self.item.copy()
         return Rhino(self.attack, self.health, self.level, new_item, self.name, self.hurt)
+    def after_attack(self, party, other_party):
+        self.attacked = False
+        return super().after_attack(party, other_party)
     def foe_has_fainted(self, location, party, other_party):
-        if location == 0:
+        if location == 0 and self.attacked:
             if other_party.len() > 0:
                 other_party.partyPets[0].take_damage(5*self.level, other_party, party)
         return True
@@ -766,8 +881,10 @@ class Turkey(Pet):
             return Turkey()
         new_item = self.item.copy()
         return Turkey(self.attack, self.health, self.level, new_item, self.name, self.hurt)
-    def new_pet_spawning(self, new_pet):
+    def new_pet_spawning(self, new_pet, party):
         new_pet.boost([3*self.level, 3*self.level])
+        tigerLv = party.tiger_lv(party.position(self) + 1)
+        new_pet.boost([3*tigerLv, 3*tigerLv])
 
 
 # Tier Six Pets #
@@ -790,7 +907,8 @@ class Boar(Pet):
         new_item = self.item.copy()
         return Boar(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def before_attack(self, party, other_party):
-        self.boost([2*self.level, 2*self.level])
+        tigerLv = party.tiger_lv(party.position(self) + 1)
+        self.boost([2*(self.level + tigerLv), 2*(self.level + tigerLv)])
         return False
 
 
@@ -850,6 +968,14 @@ class Leopard(Pet):
             for i in selections:
                 other_party.partyPets[i].take_damage(int((self.attack+1)/2), other_party, party)
                 attacks -= 1
+        tigerLv = party.tiger_lv(party.position(self) + 1)
+        if tigerLv > 0:
+            attacks = tigerLv
+            while attacks > 0:
+                selections = random.sample(range(0, other_party.len()), min(attacks, other_party.len()))
+                for i in selections:
+                    other_party.partyPets[i].take_damage(int((self.attack + 1) / 2), other_party, party)
+                    attacks -= 1
         return True
 
 
@@ -862,8 +988,9 @@ class Mammoth(Pet):
         new_item = self.item.copy()
         return Mammoth(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def faint(self, location, party, other_party):
+        tigerLv = party.tiger_lv(party.position(self) + 1)
         for pet in party.partyPets:
-            pet.boost([2*self.level, 2*self.level])
+            pet.boost([2*(self.level + tigerLv), 2*(self.level + tigerLv)])
         super().faint(location, party, other_party)
         return False
 
@@ -876,11 +1003,15 @@ class Snake(Pet):
             return Snake()
         new_item = self.item.copy()
         return Snake(self.attack, self.health, self.level, new_item, self.name, self.hurt)
-    def after_attack(self, location, party, other_party):
-        if location == 1:
-            other_party.partyPets[random.randint(0, other_party.len() - 1)].take_damage(5*self.level, party, other_party)
+    def after_attack(self, party, other_party):
+        if self.friend_in_front_attacked:
+            tigerLv = party.tiger_lv(party.position(self) + 1)
+            other_party.partyPets[random.randint(0, other_party.len()-1)].take_damage(5*self.level, party, other_party)
+            if tigerLv > 0:
+                other_party.partyPets[random.randint(0, other_party.len()-1)].take_damage(5*tigerLv, party, other_party)
+            self.friend_in_front_attacked = False
             return True
-        return False
+        super().after_attack(party, other_party)
 
 
 class Tiger(Pet):
@@ -891,6 +1022,8 @@ class Tiger(Pet):
             return Tiger()
         new_item = self.item.copy()
         return Tiger(self.attack, self.health, self.level, new_item, self.name, self.hurt)
+    def tiger_lv(self):
+        return self.level
 
 
 class ZFly(Pet):

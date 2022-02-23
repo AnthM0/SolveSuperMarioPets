@@ -20,7 +20,7 @@ class Item:
             return "<" + self.name + ">"
     def blocks_damage(self, damage):
         return False
-    def faint(self, copy, location, party):
+    def faint(self, copy, bee, location, party):
         return []
 
 
@@ -118,8 +118,8 @@ class Honey(Item):
         super().__init__(name, used)
     def copy(self):
         return Honey(self.name)
-    def faint(self, copy, location, party):
-        party.spawn([Bee()], location)
+    def faint(self, copy, bee, location, party):
+        party.spawn([bee], location)
 
 
 class Mushroom(Item):
@@ -127,7 +127,7 @@ class Mushroom(Item):
         super().__init__(name, used)
     def copy(self):
         return Mushroom(self.name)
-    def faint(self, copy, location, party):
+    def faint(self, copy, bee, location, party):
         copy.attack = 1
         copy.health = 1
         spawns = [copy]

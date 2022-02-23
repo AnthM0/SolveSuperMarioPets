@@ -20,7 +20,6 @@ class Party:
             ret_str = ret_str + "(" + pet.hash_string() + ")"
         return ret_str
 
-
     def is_alive(self):
         if self.len() > 0:
             return True
@@ -32,6 +31,10 @@ class Party:
         if pet not in self.partyPets:
             return -1
         return self.partyPets.index(pet)
+    def tiger_lv(self, location):
+        if self.len() > location:
+            return self.partyPets[location].tiger_lv()
+        return 0
     def low_health_pet(self):
         low_health_pet = self.partyPets[0]
         for pet in self.partyPets:
@@ -41,7 +44,7 @@ class Party:
     def high_health_pet(self):
         high_health_pet = self.partyPets[0]
         for pet in self.partyPets:
-            if pet.health > high_health_pet.health:
+            if pet.health >= high_health_pet.health:
                 high_health_pet = pet
         return high_health_pet
 
@@ -54,13 +57,7 @@ class Party:
 
     def start_battle(self, other_party):
         shots_fired = False
-        tiger_flag = 0
-        for pet in reversed(self.partyPets):
-            if isinstance(pet, Tiger):
-                tiger_flag = pet.level
-            elif tiger_flag > 0:
-                shots_fired = pet.start_battle(self, other_party) or shots_fired
-                tiger_flag = 0
+        for pet in self.partyPets:
             shots_fired = pet.start_battle(self, other_party) or shots_fired
         return shots_fired
 
@@ -89,7 +86,7 @@ class Party:
         for new_pet in pets:
             if self.len() < 5:
                 for pet in self.partyPets:
-                    pet.new_pet_spawning(new_pet)
+                    pet.new_pet_spawning(new_pet, self)
                 self.partyPets.insert(location, new_pet)
                 success = True
         return success
@@ -99,9 +96,11 @@ class Party:
 
     def make_attack(self, other_party):
         self.partyPets[0].make_attack(self, other_party)
+        if self.len() > 1:
+            self.partyPets[1].friend_in_front_attacked = True
 
     def after_attack(self, other_party):
         shots_fired = False
         for i in range(0, self.len()):
-            shots_fired = self.partyPets[i].after_attack(i, self, other_party) or False
+            shots_fired = self.partyPets[i].after_attack(self, other_party) or shots_fired
         return shots_fired
