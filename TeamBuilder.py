@@ -165,8 +165,8 @@ myParty = Party(round_1_teams[13])
 
 # myPets = [Deer(5, 5, 2), Whale(4, 9, 1, Chili()), Tiger(9, 8, 2), Turkey(5, 6, 2), Turkey(11, 8, 2, Melon(), "Parrot")]
 # otherPets = [Hippo(20, 33, 2, Steak()), Snake(7, 7), Monkey(), Bison(17, 17, 2), Badger(9, 8, 1, Honey())]
-myPets = [Hippo(), Snake()]
-otherPets = [Giraffe(), Swan()]
+myPets = [Bison(20, 50)]
+otherPets = [Sheep(), Ox(25)]
 myParty = Party(myPets)
 otherParty = Party(otherPets)
 Simulator.single_battle(myParty, otherParty, True)

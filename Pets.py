@@ -54,7 +54,7 @@ class Pet:
         newPets = self.item.faint(self.copy(1), Bee(), location, party)
         return False
     def friend_has_fainted(self, number, prev_party, n_party):
-        return False
+        return 0
     def foe_has_fainted(self, old_foe_party, new_foe_party, party):
         return False
     def new_pet_spawning(self, new_pet, party):
@@ -524,15 +524,20 @@ class Ox(Pet):
         new_item = self.item.copy()
         return Ox(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def friend_has_fainted(self, number, prev_party, n_party):
-        old_position = prev_party.position(self)
-        new_position = n_party.position(self)
-        if old_position > 0:
-            if new_position == 0:
-                self.boost([2*self.level, 0])
-                self.item = Melon()
-            elif prev_party.partyPets[old_position-1] != n_party.partyPets[new_position-1]:
-                self.boost([2 * self.level, 0])
-                self.item = Melon()
+        prev_party.pet_names()
+        new_party_names = n_party.pet_names()
+        ox_flag = False
+        for pet_name in reversed(prev_party.pet_names()):
+            if ox_flag:
+                if pet_name in new_party_names:
+                    new_party_names.remove(pet_name)
+                else:
+                    self.boost([2 * self.level, 0])
+                    self.item = Melon()
+                ox_flag = False
+            if pet_name == "Ox":
+                ox_flag = True
+        return 0
 
 
 class Rabbit(Pet):
@@ -871,6 +876,7 @@ class Shark(Pet):
         return Shark(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def friend_has_fainted(self, number, prev_party, n_party):
         self.boost([2*self.level*number, self.level*number])
+        return 0
 
 
 class Turkey(Pet):
@@ -925,6 +931,7 @@ class Dragon(Pet):
 class Fly(Pet):
     def __init__(self, attack=5, health=5, level=1, item=Item(), name="Fly", hurt=False):
         self.abilityUses = 3
+        self.p_turn_spawn = -69
         super().__init__(attack, health, level, item, name, hurt)
     def copy(self, base=False):
         if base:
@@ -932,9 +939,22 @@ class Fly(Pet):
         new_item = self.item.copy()
         return Fly(self.attack, self.health, self.level, new_item, self.name, self.hurt)
     def friend_has_fainted(self, number, prev_party, n_party):
-        if self.abilityUses > 0:
-            if n_party.spawn(ZFly(5*self.level, 5*self.level, self.level)):
-                self.abilityUses -= 1
+        if self.abilityUses == 0:
+            return False
+        prev_party.pet_names()
+        new_party_names = n_party.pet_names()
+        zflySpawned = 0
+        for pet_name in prev_party.pet_names():
+            if pet_name in new_party_names:
+                print(pet_name)
+                new_party_names.remove(pet_name)
+            else:
+                print(pet_name, "has died :(")
+                if (pet_name != "ZFly") and (self.abilityUses > 0):
+                    if n_party.spawn([ZFly(5 * self.level, 5 * self.level, self.level)]):
+                        self.abilityUses -= 1
+                        zflySpawned += 1
+        return zflySpawned
 
 
 class Gorilla(Pet):
